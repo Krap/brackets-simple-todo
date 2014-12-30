@@ -1,0 +1,205 @@
+#ovk-todo-toolbar-icon
+{
+    background-image: url('icons/icon.svg');
+}
+
+#ovk-todo-toolbar-icon.active
+{
+    background-position: 0 -24px;
+}
+
+#ovk-simple-todo-panel .right-icons
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 40px;
+    line-height: 24px;
+    text-align: right;
+}
+
+#ovk-simple-todo-panel .todo-completion
+{
+    padding-left: 15px;
+    width: 30px;
+}
+
+#ovk-simple-todo-panel .todo-description
+{
+    cursor: pointer;
+}
+
+#ovk-simple-todo-panel .todo-description:hover
+{
+    text-decoration: underline;
+}
+
+#ovk-simple-todo-panel .todo-description.completed span
+{
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.ovk-todo-description-edit
+{
+
+}
+
+.ovk-todo-description-edit .description
+{
+    margin-right: 75px;
+}
+
+.ovk-todo-description-edit .description input
+{
+    margin-bottom: 0px;
+    margin-top: 0px;
+    width: 100%;
+    height: 25px;
+    box-sizing: border-box;
+}
+
+.ovk-todo-description-edit .controls
+{
+    width: 70px;
+    line-height: 25px;
+    float: right;
+}
+
+#ovk-simple-todo-panel a.icon-link
+{
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    background-size: 15px 15px;
+    opacity: 0.8;
+    text-decoration: none;
+    outline-style:none;
+    box-shadow:none;
+    border-color:transparent
+}
+
+#ovk-simple-todo-panel a.icon-link.disabled
+{
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+#ovk-simple-todo-panel a.icon-link:hover
+{
+    opacity: 1;
+}
+
+#ovk-todo-add
+{
+    background: url('icons/add.svg');
+}
+
+#ovk-todo-reload
+{
+    background: url('icons/reload.svg');
+}
+
+#ovk-todo-toggle-completed.show
+{
+    background: url('icons/completed.svg');
+}
+
+#ovk-todo-toggle-completed.hide
+{
+    background: url('icons/incomplete.svg');
+}
+
+#ovk-todo-settings
+{
+    background: url('icons/settings.svg');
+}
+
+.ovk-todo-description-edit .edit-accept
+{
+    background: url('icons/yes.svg');
+}
+
+.ovk-todo-description-edit .edit-decline
+{
+    background: url('icons/no.svg');
+}
+
+.ovk-todo-description-edit .edit-delete
+{
+    background: url('icons/delete.svg');
+}
+
+ul.ovk-nav-tabs
+{
+    list-style: none;
+    padding-left: 0;
+    border-bottom: 1px solid #999;
+    margin-bottom: 15px;
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+ul.ovk-nav-tabs:after
+{
+    clear: both;
+}
+
+ul.ovk-nav-tabs:before, ul.ovk-nav-tabs:after
+{
+    display: table;
+    content: "";
+    line-height: 0;
+}
+
+.ovk-nav-tabs>li
+{
+    position: relative;
+    display: block;
+    float: left;
+    margin-bottom: -1px;
+}
+
+.ovk-nav-tabs>li>a
+{
+    position: relative;
+    display: block;
+    padding: 5px 10px;
+    margin-right: 4px;
+    line-height: 1.42857143;
+    border-radius: 4px 4px 0 0;
+    border: 1px solid #999;
+}
+
+.ovk-nav-tabs>li.active>a
+{
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.ovk-settings-body legend
+{
+    color: #999;
+    border-bottom-color: #999;
+}
+
+.ovk-settings-body .settings-row
+{
+    margin-bottom: 8px;
+}
+
+.ovk-settings-body label
+{
+    display: inline-block;
+    width: 200px;
+    vertical-align: middle;
+    margin-bottom: 0px;
+    margin-left: 12px;
+    cursor: default;
+}
+
+.ovk-settings-body select, .ovk-settings-body input
+{
+    margin: 0px;
+}

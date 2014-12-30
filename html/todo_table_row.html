@@ -1,0 +1,10 @@
+{{ #todos }}
+<tr id="ovk-todo-item-{{ id }}">
+    <td class="todo-completion">
+        <input type="checkbox" data-todo-id="{{ id }}" {{ #isCompleted }} checked {{ /isCompleted }} />
+    </td>
+    <td class="todo-description {{ #isCompleted }} completed {{ /isCompleted }}" data-todo-id="{{ id }}">
+        {{{ description }}}
+    </td>
+</tr>
+{{ /todos }}

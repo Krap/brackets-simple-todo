@@ -1,0 +1,59 @@
+<div class="modal">
+    <div class="modal-header">
+        <h4 class="dialog-title">{{ Strings.DIALOG_TITLE_SETTINGS }}</h4>
+    </div>
+    <div class="modal-body ovk-settings-body">
+        <div class="field-container">
+            <!-- Tabs navigation -->
+            <ul class="ovk-nav-tabs">
+                <li class="active"><a href="#" id="ovk-nav-settings-general">{{ Strings.SETTINGS_TAB_GENERAL }}</a></li>
+
+                {{ #Providers }}
+                <li><a href="#" id="ovk-nav-{{ provider.SETTINGS_ID }}">{{ Strings.SETTINGS_PROVIDER }}: {{ provider.PROVIDER_NAME }}</a></li>
+                {{ /Providers }}
+            </ul>
+
+            <!-- Tabs -->
+            <div class="tab-content">
+                <!-- General settings -->
+                <div class="tab-pane active" id="ovk-tab-settings-general">
+                    <fieldset>
+                        <legend>{{ Strings.SETTINGS_GENERAL }}</legend>
+
+                        <div class="settings-row">
+                            <label>{{ Strings.SETTINGS_TODO_STORAGE }}</label>
+                            <select>
+                                <option>{{ Strings.SETTINGS_FILE_PROVIDER_NAME }}</option>
+                            </select>
+                        </div>
+
+                        <div class="settings-row">
+                            <label>{{ Strings.SETTINGS_DELETE_COMPLETED }}</label>
+                            <input type="checkbox" id="ovk-settings-delete-completed" /><span class="text-muted"> ({{ Strings.SETTINGS_DELETE_COMPLETED_WARN }})</span>
+                        </div>
+                    </fieldset>
+                </div>
+
+                {{ #Providers }}
+                <div class="tab-pane" id="ovk-tab-{{ provider.SETTINGS_ID }}">
+                    <fieldset>
+                    {{ #provider.PARAMETERS }}
+                        <label>{{ NAME }}</label>
+
+                        {{ #TYPE_STRING }}
+                        <input type="text" id="ovk-param-{{ provider.SETTINGS_ID }}-{{ ID }}" />
+                        {{ /TYPE_STRING }}
+
+                    {{ /provider.PARAMETERS }}
+                    </fieldset>
+                </div>
+                {{ /Providers }}
+            </div>
+         </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" id="ovk-settings-reset" class="dialog-button btn left">Reset</button>
+        <button type="button" id="ovk-settings-accept" class="dialog-button btn primary">Done</button>
+        <button type="button" id="ovk-settings-decline" class="dialog-button btn">Cancel</button>
+    </div>
+</div>
