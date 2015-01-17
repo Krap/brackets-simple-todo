@@ -1,6 +1,14 @@
-<table class="table table-condensed table-striped">
+{{ #CATEGORIES }}
+<table class="table table-condensed table-striped" id="ovk-todo-table-category-{{ CATEGORY_ID }}">
+    {{ ^UNCATEGORIZED_CATEGORY }}
+    <thead>
+        <tr>
+            <th colspan="2">{{ CATEGORY_NAME }}</th>
+        </tr>
+    </thead>
+    {{ /UNCATEGORIZED_CATEGORY }}
     <tbody>
-        {{{ content }}}
+        {{{ RENDERED_TODO_LIST }}}
     </tbody>
 </table>
-
+{{ /CATEGORIES }}

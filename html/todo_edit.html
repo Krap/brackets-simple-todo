@@ -2,11 +2,11 @@
     <div class="controls">
         <a href="#" class="icon-link edit-accept" title="{{ Strings.EDIT_TOOLTIP_ACCEPT }}">&nbsp;</a>
         <a href="#" class="icon-link edit-decline" title="{{ Strings.EDIT_TOOLTIP_DECLINE }}">&nbsp;</a>
-        {{ #showDelete }}
+        {{ #TODO_DELETE_VISIBLE }}
         <a href="#" class="icon-link edit-delete" title="{{ Strings.EDIT_TOOLTIP_DELETE }}">&nbsp;</a>
-        {{ /showDelete }}
+        {{ /TODO_DELETE_VISIBLE }}
     </div>
     <div class="description">
-        <input type="text" value="{{ description }}" placeholder="{{ Strings.PLACEHOLDER_TODO_ITEM }}" />
+        <input type="text" value="{{ TODO_DESCRIPTION }}" placeholder="{{ Strings.PLACEHOLDER_TODO_ITEM }}" />
     </div>
 </div>

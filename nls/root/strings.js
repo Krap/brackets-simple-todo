@@ -41,11 +41,17 @@ define(
     'SETTINGS_PROVIDER':                'Storage',
     'SETTINGS_FILE_PROVIDER_NAME':      'Text File',
     'FILE_PROVIDER_FILE_NAME':          'To-Do File Name',
+    'FILE_PROVIDER_CATEGORY_PREFIX':    'Category Prefix',
     'FILE_PROVIDER_COMPLETED_PREFIX':   'Completed Item Prefix',
-    'FILE_PROVIDER_INCOMPLETE_PREFIX':  'Innomplete Item Prefix',
+    'FILE_PROVIDER_INCOMPLETE_PREFIX':  'Incomplete Item Prefix',
+    'FILE_PROVIDER_ERR_READ_FAILED':    'Failed to read to-do file',
+    'FILE_PROVIDER_ERR_WRITE_FAILED':   'Failed to write to-do file',
+    'FILE_PROVIDER_ERR_CAT_NOT_FOUND':  'Failed to find category with id: ',
+    'FILE_PROVIDER_ERR_TODO_NOT_FOUND': 'Failed to find to-do with id: ',
     'FILE_PROVIDER_ERR_FILENAME_EMPTY': 'To-Do file name must not be empty',
+    'FILE_PROVIDER_ERR_CAT_MARKER_EMPTY': 'Category marker must not be empty',
     'FILE_PROVIDER_ERR_MARKER_EMPTY':   'Completion prefix must not be empty',
-    'FILE_PROVIDER_ERR_MARKERS_SAME':   'Completion prefixes must be unique. One prefix cannot start with another (e.g. "abc" and "abcd")',
+    'FILE_PROVIDER_ERR_MARKERS_SAME':   'Completion and category prefixes must be unique. One prefix cannot start with another (e.g. "abc" and "abcd")',
 
     //
     'PLACEHOLDER_TODO_ITEM':            'To-Do Item'

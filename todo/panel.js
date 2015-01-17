@@ -1,5 +1,11 @@
+/**
+ * @fileOverview Bottom panel with bar and to-do editor
+ * @author Oleg Koshelnikov
+ * @license MIT
+ */
+
 /*jslint plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, white: true */
-/*global define, $, brackets, window, jQuery, Mustache */
+/*global define, $, brackets, Mustache */
 
 define(function(require)
 {
@@ -16,148 +22,158 @@ define(function(require)
 
         todoPanelHtml       = require('text!html/panel.html');
 
-    function TodoPanel(callbacks, isShowCompleted)
+    /**
+     * Create new TodoPanel
+     *
+     * @constructor
+     * @class TodoPanel
+     * @param {Object} callbacks - Callbacks to be called on some user actions
+     */
+    function TodoPanel(callbacks)
     {
-        var that = this;
-
-        this._callbacks = callbacks;
-        this._isCompletedVisible = isShowCompleted;
-
-        // Create panel and initialize callbacks
-        WorkspaceManager.createBottomPanel('ovk.simple-todo.panel', $(Mustache.render(todoPanelHtml, { 'Strings': Strings })));
-
-        this._panel = $('#ovk-simple-todo-panel');
-        this._panel.on('click', '.close',                       function () { that._onClose(); });
-        this._panel.on('click', '#ovk-todo-settings',           function () { that._onShowSettings(); });
-        this._panel.on('click', '#ovk-todo-reload',             function () { that._onReload(); });
-        this._panel.on('click', '#ovk-todo-add',                function () { that._onCreateTodo(); } );
-        this._panel.on('click', '#ovk-todo-toggle-completed',   function () { that._onToggleCompleted(); } );
-        this._panel.on('change', '.todo-completion input', function ()
-        {
-            callbacks.onCompletionChanged($(this).data('todo-id'), this.checked);
-        });
-
-        this._panel.find('#ovk-todo-toggle-completed').addClass(this._isCompletedVisible ? 'show': 'hide');
-
-        // Create todo editor inside panel
-        this._editor = new TodoEditor(this._panel,
-        {
-            'onAdd':            function (description) { that._onTodoAdd(description); },
-            'onEdit':           function (id, description, isCompleted) { that._onTodoEdit(id, description, isCompleted); },
-            'onDelete':         function (id) { that._onTodoDelete(id); },
-            'onModeChanged':    function (mode) { that._onEditModeChanged(mode); }
-        });
+        this._initialize(callbacks);
+        this._setCompletedTodoVisibility(true);
     }
 
-    TodoPanel.prototype._onClose = function ()
+    /**
+     * Set whether completed to-do items should be visible or hidden
+     *
+     * @memberOf TodoPanel
+     * @param {Boolean} isVisible - True to show, false to hide
+     */
+    TodoPanel.prototype.setCompletedTodoVisibility = function (isVisible)
     {
-        this._callbacks.onClose();
+        this._setCompletedTodoVisibility(isVisible);
     };
 
-    TodoPanel.prototype._onReload = function ()
+    /**
+     * Get current completed to-do items visibility
+     *
+     * @memberOf TodoPanel
+     * @returns {Boolean} - True if visible, false if hidden
+     */
+    TodoPanel.prototype.getCompletedTodoVisibility = function ()
     {
-        var that = this;
-
-        if (this.getEditor().getMode() !== TodoEditor.MODE_IDLE)
-        {
-            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.DIALOG_TITLE_CONFIRM_RELOAD, Strings.DIALOG_MESSAGE_CONFIRM_RELOAD,
-                [{ className: Dialogs.DIALOG_BTN_CLASS_PRIMARY, id: Dialogs.DIALOG_BTN_CANCEL,   text: Strings.CANCEL },
-                 { className: Dialogs.DIALOG_BTN_CLASS_LEFT,    id: Dialogs.DIALOG_BTN_DONTSAVE, text: Strings.YES_RELOAD }])
-            .done(function (buttonId)
-            {
-                if (buttonId === Dialogs.DIALOG_BTN_DONTSAVE)
-                {
-                    that._callbacks.onReload();
-                }
-            });
-        }
-        else
-        {
-            this._callbacks.onReload();
-        }
+        return this._getCompletedTodoVisibility();
     };
 
-    TodoPanel.prototype._onCreateTodo = function ()
-    {
-        this.getEditor().createTodoItem();
-    };
-
-    TodoPanel.prototype._onToggleCompleted = function ()
-    {
-        var classToRemove   = this._isCompletedVisible ? 'show' : 'hide',
-            classToAdd      = this._isCompletedVisible ? 'hide' : 'show';
-
-        this._isCompletedVisible = !this._isCompletedVisible;
-        this._panel.find('#ovk-todo-toggle-completed').removeClass(classToRemove).addClass(classToAdd);
-
-        this._callbacks.onToggleCompleted();
-    };
-
-    TodoPanel.prototype._onShowSettings = function ()
-    {
-        this._callbacks.onShowSettings();
-    };
-
-    TodoPanel.prototype._onTodoAdd = function (description)
-    {
-        if (description.trim().length === 0)
-        {
-            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_ADD_TODO_FAILED, Strings.DIALOG_MESSAGE_DESCR_EMPTY);
-        }
-        else
-        {
-            this._callbacks.onTodoAdd(description);
-        }
-    };
-
-    TodoPanel.prototype._onTodoEdit = function (id, description, isCompleted)
-    {
-        if (description.trim().length === 0)
-        {
-            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_EDIT_TODO_FAILED, Strings.DIALOG_MESSAGE_DESCR_EMPTY);
-        }
-        else
-        {
-            this._callbacks.onTodoEdit(id, description, isCompleted);
-        }
-    };
-
-    TodoPanel.prototype._onTodoDelete = function (id)
-    {
-        this._callbacks.onTodoDelete(id);
-    };
-
-    TodoPanel.prototype._onEditModeChanged = function (mode)
-    {
-        if (mode === TodoEditor.MODE_IDLE)
-        {
-            this._panel.find('#ovk-todo-add').removeClass('disabled');
-            this._panel.find('#ovk-todo-toggle-completed').removeClass('disabled');
-            this._panel.find('#ovk-todo-settings').removeClass('disabled');
-
-            this._panel.find('.todo-completion input').prop('disabled', false);
-        }
-        else
-        {
-            this._panel.find('#ovk-todo-add').addClass('disabled');
-            this._panel.find('#ovk-todo-toggle-completed').addClass('disabled');
-            this._panel.find('#ovk-todo-settings').addClass('disabled');
-
-            this._panel.find('.todo-completion input').prop('disabled', true);
-        }
-    };
-
-
-
-    //
+    /**
+     * Get reference to TodoEditor inside this panel
+     *
+     * @memberOf TodoPanel
+     * @returns {TodoEditor} - Reference to TodoEditor
+     */
     TodoPanel.prototype.getEditor = function ()
     {
         return this._editor;
     };
 
+    /**
+     * Show/hide to-do panel
+     *
+     * @memberOf TodoPanel
+     * @param {Boolean} isVisible - True to show, false to hide
+     */
     TodoPanel.prototype.setVisible = function (isVisible)
     {
-        if (isVisible)
+        this._setVisible(isVisible);
+    };
+
+    /****************************** PRIVATE ******************************/
+
+    /**
+     * Initialize to-do panel
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Object} callbacks - Callbacks
+     */
+    TodoPanel.prototype._initialize = function (callbacks)
+    {
+        var that = this;
+
+        this._callbacks = callbacks;
+        this._initializePanel();
+
+        // Create to-do editor inside panel
+        this._editor = new TodoEditor(this._panel,
+        {
+            'onAdd':                function (categoryId, description) { that._onTodoAdd(categoryId, description); },
+            'onEdit':               function (id, description, isCompleted) { that._onTodoEdit(id, description, isCompleted); },
+            'onDelete':             function (id) { that._onTodoDelete(id); },
+            'onModeChanged':        function (mode) { that._onEditModeChanged(mode); },
+            'onCompletionChanged':  function (id, isCompleted) { that._callbacks.onCompletionChanged(id, isCompleted); }
+        });
+    };
+
+    /**
+     * Initialize to-do panel UI components
+     *
+     * @memberOf TodoPanel
+     * @private
+     */
+    TodoPanel.prototype._initializePanel = function ()
+    {
+        var that = this;
+
+        // Create panel
+        WorkspaceManager.createBottomPanel('ovk.simple-todo.panel', $(Mustache.render(todoPanelHtml, { 'Strings': Strings })));
+
+        this._panel = $('#ovk-simple-todo-panel');
+
+        this._buttons =
+        {
+            'reload':           this._panel.find('#ovk-todo-reload'),
+            'addTodo':          this._panel.find('#ovk-todo-add'),
+            'toggleCompleted':  this._panel.find('#ovk-todo-toggle-completed'),
+            'settings':         this._panel.find('#ovk-todo-settings'),
+            'close':            this._panel.find('.close')
+        };
+
+        this._buttons.close.click(this._callbacks.onClose);
+        this._buttons.settings.click(this._callbacks.onShowSettings);
+        this._buttons.reload.click(this._callbacks.onReload);
+        this._buttons.toggleCompleted.click(this._callbacks.onToggleCompleted);
+        this._buttons.addTodo.click(function () { that.getEditor().createTodoItem(); } );
+    };
+
+    /**
+     * Set whether completed to-do items should be visible or hidden
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Boolean} isVisible - True to show, false to hide
+     */
+    TodoPanel.prototype._setCompletedTodoVisibility = function (isVisible)
+    {
+        this._isCompletedTodoVisible = !!isVisible;
+        this._buttons.toggleCompleted.toggleClass('completed-visible', this._isCompletedTodoVisible);
+
+        // TODO - filter items in editor
+    };
+
+    /**
+     * Get current completed to-do items visibility
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @returns {Boolean} - True if visible, false if hidden
+     */
+    TodoPanel.prototype._getCompletedTodoVisibility = function ()
+    {
+        return this._isCompletedTodoVisible;
+    };
+
+    /**
+     * Show/hide to-do panel
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Boolean} isVisible - True to show, false to hide
+     */
+    TodoPanel.prototype._setVisible = function (isVisible)
+    {
+        if (!!isVisible)
         {
             Resizer.show(this._panel);
         }
@@ -167,7 +183,78 @@ define(function(require)
         }
     };
 
+    /**
+     * This method is called by TodoEditor, when user adds new to-do item
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Number} categoryId  - Category id
+     * @param {String} description - To-do item description
+     */
+    TodoPanel.prototype._onTodoAdd = function (categoryId, description)
+    {
+        if (description.trim().length === 0)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_ADD_TODO_FAILED, Strings.DIALOG_MESSAGE_DESCR_EMPTY);
+        }
+        else
+        {
+            this._callbacks.onTodoAdd(categoryId, description);
+        }
+    };
 
+    /**
+     * This method is called by TodoEditor, when user edits existing to-do item
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Number}   id          - To-do item identifier
+     * @param {String}   description - New to-do item description
+     */
+    TodoPanel.prototype._onTodoEdit = function (id, description)
+    {
+        if (description.trim().length === 0)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_EDIT_TODO_FAILED, Strings.DIALOG_MESSAGE_DESCR_EMPTY);
+        }
+        else
+        {
+            this._callbacks.onTodoEdit(id, description);
+        }
+    };
+
+    /**
+     * This method is called by TodoEditor, when user deletes existing to-do item
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Number} id - To-do item identifier
+     */
+    TodoPanel.prototype._onTodoDelete = function (id)
+    {
+        this._callbacks.onTodoDelete(id);
+    };
+
+    /**
+     * This method is called by TodoEditor, when its internal 'edit mode' is changed (e.g. user starts/finished edit)
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Number} mode - Edit mode of TodoEditor
+     */
+    TodoPanel.prototype._onEditModeChanged = function (mode)
+    {
+        var isControlsDisabled = (mode !== TodoEditor.MODE_IDLE);
+
+        // Enable/disable controls in bar
+        this._buttons.reload.toggleClass('disabled', isControlsDisabled);
+        this._buttons.addTodo.toggleClass('disabled', isControlsDisabled);
+        this._buttons.toggleCompleted.toggleClass('disabled', isControlsDisabled);
+        this._buttons.settings.toggleClass('disabled', isControlsDisabled);
+
+        // Enable/disable to-do completion checkboxes
+        this._panel.find('.todo-completion input').prop('disabled', isControlsDisabled);
+    };
 
     return TodoPanel;
 });
