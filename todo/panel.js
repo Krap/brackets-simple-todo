@@ -146,10 +146,13 @@ define(function(require)
      */
     TodoPanel.prototype._setCompletedTodoVisibility = function (isVisible)
     {
+        var filter = this.getEditor().getFilter();
+
         this._isCompletedTodoVisible = !!isVisible;
         this._buttons.toggleCompleted.toggleClass('completed-visible', this._isCompletedTodoVisible);
 
-        // TODO - filter items in editor
+        filter.completed = this._isCompletedTodoVisible ? null : false;
+        this.getEditor().setFilter(filter);        
     };
 
     /**

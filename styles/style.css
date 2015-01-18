@@ -101,12 +101,12 @@
     background: url('icons/reload.svg');
 }
 
-#ovk-todo-toggle-completed.show
+#ovk-todo-toggle-completed.completed-visible
 {
     background: url('icons/completed.svg');
 }
 
-#ovk-todo-toggle-completed.hide
+#ovk-todo-toggle-completed
 {
     background: url('icons/incomplete.svg');
 }
@@ -203,3 +203,9 @@ ul.ovk-nav-tabs:before, ul.ovk-nav-tabs:after
 {
     margin: 0px;
 }
+
+.ovk-table-stripe-saver
+{
+    display: none;
+}
+

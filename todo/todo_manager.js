@@ -309,7 +309,7 @@ define(function(require)
         var isVisible = Settings.toggle(Settings.COMPLETED_TODO_VISIBLE);
         Settings.save();
 
-        this._panel.setCompletedTodoVisible(isVisible);
+        this._panel.setCompletedTodoVisibility(isVisible);
     };
 
     /**

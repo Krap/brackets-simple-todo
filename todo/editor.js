@@ -20,7 +20,8 @@ define(function(require)
         todoTableHtml       = require('text!html/todo_table.html'),
         todoRowHtml         = require('text!html/todo_table_row.html'),
         todoEditHtml        = require('text!html/todo_edit.html'),
-        todoDisplayHtml     = require('text!html/todo_display.html');
+        todoDisplayHtml     = require('text!html/todo_display.html'),
+        stripeSaverHtml     = require('text!html/table_stripe_saver.html');
 
     /**
      * Create new TodoEditor
@@ -44,6 +45,28 @@ define(function(require)
     TodoEditor.prototype.getMode = function ()
     {
         return this._mode;
+    };
+
+    /**
+     * Get currently applied filter object
+     *
+     * @memberOf TodoEditor
+     * @returns {Object} Editor filter object: { 'completed': true|false|null }
+     */
+    TodoEditor.prototype.getFilter = function ()
+    {
+        return this._filter;
+    };
+
+    /**
+     * Apply new filter
+     *
+     * @memberOf TodoEditor
+     * @param {Object} filter Editor filter object
+     */
+    TodoEditor.prototype.setFilter = function (filter)
+    {
+        this._setFilter(filter);
     };
 
     /**
@@ -83,6 +106,7 @@ define(function(require)
         var that = this;
 
         this._mode = TodoEditor.MODE_IDLE;
+        this._filter = { 'completed': null };
 
         this._callbacks = callbacks;
         this._todoPanel = todoPanel;
@@ -152,6 +176,8 @@ define(function(require)
         renderedResult = Mustache.render(todoTableHtml, { 'CATEGORIES': categoriesModel });
 
         this._tableContainer.empty().append($(renderedResult));
+
+        this._applyFilterIfRequired();
     };
 
     /**
@@ -339,6 +365,68 @@ define(function(require)
     };
 
     /**
+     * Set and apply new filter
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param {Object} filter Editor filter object
+     */
+    TodoEditor.prototype._setFilter = function (filter)
+    {
+        if (this.getMode() === TodoEditor.MODE_IDLE)
+        {
+            this._filter = filter;
+            this._applyFilter();
+        }
+    };
+
+    /**
+     * This method applies current filter only if it is different from dfault one
+     *
+     * @memberOf TodoEditor
+     * @private
+     */
+    TodoEditor.prototype._applyFilterIfRequired = function ()
+    {
+        if (this._filter.completed !== TodoEditor.DEFAULT_FILTER.completed)
+        {
+            this._applyFilter();
+        }
+    };
+
+    /**
+     * Apply current filter and hide items that do not match it
+     *
+     * @memberOf TodoEditor
+     * @private
+     */
+    TodoEditor.prototype._applyFilter = function ()
+    {
+        var that = this;
+
+        // Clear any existing stripe saver
+        this._tableContainer.find('tr.ovk-table-stripe-saver').remove();
+
+        // Hide each row that does not match the filter
+        this._tableContainer.find('tr').each(function ()
+        {
+            var row         = $(this),
+                isChecked   = !!row.find('.todo-completion input').is(':checked'),
+                filtered    = (that._filter.completed !== null && that._filter.completed !== isChecked);
+
+            if (filtered)
+            {
+                row.before(stripeSaverHtml);
+                row.hide();
+            }
+            else
+            {
+                row.show();
+            }
+        });
+    };
+
+    /**
      * Edit given to-do item in a given mode
      *
      * @memberOf TodoEditor
@@ -419,6 +507,15 @@ define(function(require)
      * @constant
      */
     TodoEditor.MODE_EDIT  = 2;
+
+    /**
+     * Default filter for to-do items
+     *
+     * @name TodoEditor#DEFAULT_FILTER
+     * @type Object
+     * @constant
+     */
+    TodoEditor.DEFAULT_FILTER = { 'completed': null };
 
     return TodoEditor;
 });
