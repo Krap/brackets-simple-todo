@@ -14,10 +14,13 @@ define(function(require)
         settingsDialogHtml  = require('text!html/settings_dialog.html'),
 
         dialog,
-        providers;
+        providers,
+        deleteCompletedWarningShown;
 
     function resetDialog()
     {
+        deleteCompletedWarningShown = false;
+
         $('#ovk-settings-delete-completed').prop('checked', Settings.get(Settings.DELETE_COMPLETED_TODO));
 
         $.each(providers, function (index, definition)
@@ -34,7 +37,17 @@ define(function(require)
 
     function acceptSettings(promise)
     {
-        var providersSettings = [], validationError;
+        var providersSettings = [],
+            isDeleteCompleted = $('#ovk-settings-delete-completed').is(':checked'),
+            validationError;
+
+        // If user checks 'Delete completed to-do', warn him that all existing completed to-do will be permanently deleted
+        if (!!isDeleteCompleted && !Settings.get(Settings.DELETE_COMPLETED_TODO) && !deleteCompletedWarningShown)
+        {
+            dialog.getElement().find('.ovk-settings-body').append('<div class="alert" style="margin: 15px" id="ovk-settings-error">' + Strings.SETTINGS_CONFIRM_DELETE_COMPLETED + '</div>');
+            deleteCompletedWarningShown = true;
+            return;
+        }
 
         $.each(providers, function (index, definition)
         {
@@ -70,7 +83,7 @@ define(function(require)
                 Settings.setProviderSettings(value.definition, value.settings);
             });
 
-            Settings.set(Settings.DELETE_COMPLETED_TODO, $('#ovk-settings-delete-completed').is(':checked'));
+            Settings.set(Settings.DELETE_COMPLETED_TODO, isDeleteCompleted);
             Settings.save();
             promise.resolve();
             dialog.close();

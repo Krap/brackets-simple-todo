@@ -7,6 +7,8 @@ define(
     'EXTENSION_NAME':                   'Simple To-Do',
 
     // General
+    'DONE':                             'Done',
+    'RESET':                            'Reset',
     'CANCEL':                           'Cancel',
 
     'YES_RELOAD':                       'Yes, reload',
@@ -21,15 +23,13 @@ define(
     'EDIT_TOOLTIP_DELETE':              'Delete to-do item',
 
     // Dialogs
-    'DIALOG_TITLE_CONFIRM_RELOAD':      'Confirm reload',
-    'DIALOG_MESSAGE_CONFIRM_RELOAD':    'Do you really want to reload? All changes to the edited to-do item will be lost.',
-
     'DIALOG_TITLE_ADD_TODO_FAILED':     'Failed to add to-do item',
     'DIALOG_MESSAGE_DESCR_EMPTY':       'A to-do item description is empty.',
 
     'DIALOG_TITLE_EDIT_TODO_FAILED':    'Failed to edit to-do item',
     'DIALOG_TITLE_DELETE_TODO_FAILED':  'Failed to delete to-do item',
     'DIALOG_TITLE_LIST_TODO_FAILED':    'Failed to read list of to-do items',
+    'DIALOG_TITLE_DEL_COMPLETED_FAILED':'Failed to delete all completed to-do items',
 
     'DIALOG_TITLE_SETTINGS':            'Simple To-Do Settings',
     'SETTINGS_TAB_GENERAL':             'General',
@@ -37,6 +37,7 @@ define(
     'SETTINGS_TODO_STORAGE':            'To-Do Items Storage',
     'SETTINGS_DELETE_COMPLETED':        'Delete Completed',
     'SETTINGS_DELETE_COMPLETED_WARN':   'Warning: all completed to-do items will be deleted',
+    'SETTINGS_CONFIRM_DELETE_COMPLETED':'Warning: all your completed to-do items will be permanently deleted. Press \"Done\" again to confirm.',
 
     'SETTINGS_PROVIDER':                'Storage',
     'SETTINGS_FILE_PROVIDER_NAME':      'Text File',

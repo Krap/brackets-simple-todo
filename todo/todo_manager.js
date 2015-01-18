@@ -313,6 +313,47 @@ define(function(require)
     };
 
     /**
+     * Delete all completed to-do items
+     *
+     * @memberOf TodoManager
+     * @private
+     * @returns {$.Promise} Promise object that will be resolved on success, or rejected with an error description on failure
+     */
+    TodoManager.prototype._deleteCompletedTodoItems = function ()
+    {
+        var that    = this,
+            result  = $.Deferred(), i, j, categories, category, todos, deletePromises = [];
+
+        this._provider.getTodoList()
+        .done(function (todoList)
+        {
+            categories = todoList.getCategoriesList();
+
+            for (i = 0; i < categories.length; ++i)
+            {
+                category = categories[i];
+                todos = todoList.getTodoListForCategory(category.getId());
+
+                for (j = 0; j < todos.length; ++j)
+                {
+                    if (todos[j].isCompleted())
+                    {
+                        deletePromises.push(that._provider.deleteTodo(todos[j].getId()));
+                    }
+                }
+            }
+
+            $.when.apply($, deletePromises).done(function () { result.resolve(); }).fail(function (error) { result.reject(error); });
+        })
+        .fail(function (error)
+        {
+            result.reject(error);
+        });
+
+        return result;
+    };
+
+    /**
      * Show settings dialog and apply settings if user clicks "Apply"
      *
      * @memberOf TodoManager
@@ -320,7 +361,7 @@ define(function(require)
      */
     TodoManager.prototype._showSettingsDialog = function ()
     {
-        var that = this, providersSettingsList = [], i;
+        var that = this, providersSettingsList = [], i, deleteCompletedPromise = $.Deferred().resolve();
 
         // Prepare array of settings for each provider
         for (i = 0; i < this._providers.length; ++i)
@@ -335,12 +376,19 @@ define(function(require)
             // Delete completed to-do items
             if(Settings.get(Settings.DELETE_COMPLETED_TODO))
             {
-                // TODO - delete completed to-do items
-                i = 42;
+                deleteCompletedPromise = that._deleteCompletedTodoItems();
             }
 
-            that._provider.applySettings(Settings.getProviderSettings(that._provider.constructor.settings));
-            that._rereadTodoList();
+            // Deleting completed to-do items in async, so have to wait for completion
+            deleteCompletedPromise.done(function ()
+            {
+                that._provider.applySettings(Settings.getProviderSettings(that._provider.constructor.settings));
+                that._rereadTodoList();
+            })
+            .fail(function (error)
+            {
+                Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_DEL_COMPLETED_FAILED, error);
+            });
         });
     };
 
