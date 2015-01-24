@@ -10,17 +10,19 @@ define(
     'DONE':                             'Done',
     'RESET':                            'Reset',
     'CANCEL':                           'Cancel',
-
-    'YES_RELOAD':                       'Yes, reload',
+    'DELETE':                           'Delete',
 
     'PANEL_TOOLTIP_ADD_TODO':           'Add new to-do item',
+    'PANEL_TOOLTIP_ADD_CATEGORY':       'Add new category',
+    'PANEL_TOOLTIP_ADD_TO_CAT_TODO':    'Add to-do item to this category',
+    'PANEL_TOOLTIP_HIDE_CAT':           'Hide/Show category',
     'PANEL_TOOLTIP_RELOAD_TODO':        'Reload to-do items',
     'PANEL_TOOLTIP_TOGGLE_COMPLETED':   'Show/Hide completed to-do items',
     'PANEL_TOOLTIP_SETTINGS':           'Settings',
 
     'EDIT_TOOLTIP_ACCEPT':              'Accept changes',
     'EDIT_TOOLTIP_DECLINE':             'Decline changes',
-    'EDIT_TOOLTIP_DELETE':              'Delete to-do item',
+    'EDIT_TOOLTIP_DELETE':              'Delete',
 
     // Dialogs
     'DIALOG_TITLE_ADD_TODO_FAILED':     'Failed to add to-do item',
@@ -30,6 +32,15 @@ define(
     'DIALOG_TITLE_DELETE_TODO_FAILED':  'Failed to delete to-do item',
     'DIALOG_TITLE_LIST_TODO_FAILED':    'Failed to read list of to-do items',
     'DIALOG_TITLE_DEL_COMPLETED_FAILED':'Failed to delete all completed to-do items',
+    'DIALOG_TITLE_DELETE_CAT_FAILED':   'Failed to delete category',
+
+    'DIALOG_TITLE_ADD_CAT_FAILED':      'Failed to add category',
+
+    'DIALOG_TITLE_EDIT_CAT_FAILED':     'Failed to edit category',
+    'DIALOG_MESSAGE_CAT_NAME_EMPTY':    'A category name is empty',
+
+    'DIALOG_TITLE_CONFIRM_CAT_DELETE':  'Confirm category delete',
+    'DIALOG_MESSAGE_CONFIRM_CAT_DELETE':'Delete category \'{0}\' and all its to-do items?',
 
     'DIALOG_TITLE_SETTINGS':            'Simple To-Do Settings',
     'SETTINGS_TAB_GENERAL':             'General',
@@ -55,5 +66,6 @@ define(
     'FILE_PROVIDER_ERR_MARKERS_SAME':   'Completion and category prefixes must be unique. One prefix cannot start with another (e.g. "abc" and "abcd")',
 
     //
-    'PLACEHOLDER_TODO_ITEM':            'To-Do Item'
+    'PLACEHOLDER_TODO_ITEM':            'To-Do Item',
+    'PLACEHOLDER_CATEGORY':             'Category Name'
 });

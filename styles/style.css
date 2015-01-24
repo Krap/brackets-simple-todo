@@ -40,6 +40,17 @@
     text-decoration: line-through;
 }
 
+#ovk-simple-todo-panel .todo-category .category-name
+{
+    cursor: pointer;
+}
+
+#ovk-simple-todo-panel .todo-category .category-name:hover
+{
+    text-decoration: underline;
+}
+
+
 .ovk-todo-description-edit
 {
 
@@ -96,6 +107,11 @@
     background: url('icons/add.svg');
 }
 
+#ovk-todo-cat-add
+{
+    background: url('icons/add.svg');
+}
+
 #ovk-todo-reload
 {
     background: url('icons/reload.svg');
@@ -129,6 +145,16 @@
 .ovk-todo-description-edit .edit-delete
 {
     background: url('icons/delete.svg');
+}
+
+.ovk-todo-add-to-cat
+{
+    background: url('icons/add.svg');
+}
+
+.ovk-todo-fold-cat
+{
+    background: url('icons/no.svg');
 }
 
 ul.ovk-nav-tabs

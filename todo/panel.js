@@ -13,6 +13,7 @@ define(function(require)
 
     var WorkspaceManager    = brackets.getModule('view/WorkspaceManager'),
         Resizer             = brackets.getModule('utils/Resizer'),
+        StringUtils         = brackets.getModule('utils/StringUtils'),
         Dialogs             = brackets.getModule('widgets/Dialogs'),
         DefaultDialogs      = brackets.getModule('widgets/DefaultDialogs'),
 
@@ -99,8 +100,11 @@ define(function(require)
         this._editor = new TodoEditor(this._panel,
         {
             'onAdd':                function (categoryId, description) { that._onTodoAdd(categoryId, description); },
+            'onCategoryAdd':        function (name) { that._onCategoryAdd(name); },
             'onEdit':               function (id, description, isCompleted) { that._onTodoEdit(id, description, isCompleted); },
+            'onCategoryEdit':       function (id, name) { that._onCategoryEdit(id, name); },
             'onDelete':             function (id) { that._onTodoDelete(id); },
+            'onCategoryDelete':     function (id) { that._onCategoryDelete(id); },
             'onModeChanged':        function (mode) { that._onEditModeChanged(mode); },
             'onCompletionChanged':  function (id, isCompleted) { that._callbacks.onCompletionChanged(id, isCompleted); }
         });
@@ -125,6 +129,7 @@ define(function(require)
         {
             'reload':           this._panel.find('#ovk-todo-reload'),
             'addTodo':          this._panel.find('#ovk-todo-add'),
+            'addCategory':      this._panel.find('#ovk-todo-cat-add'),
             'toggleCompleted':  this._panel.find('#ovk-todo-toggle-completed'),
             'settings':         this._panel.find('#ovk-todo-settings'),
             'close':            this._panel.find('.close')
@@ -135,6 +140,7 @@ define(function(require)
         this._buttons.reload.click(this._callbacks.onReload);
         this._buttons.toggleCompleted.click(this._callbacks.onToggleCompleted);
         this._buttons.addTodo.click(function () { that.getEditor().createTodoItem(); } );
+        this._buttons.addCategory.click(function () { that.getEditor().createCategory(); } );
     };
 
     /**
@@ -152,7 +158,7 @@ define(function(require)
         this._buttons.toggleCompleted.toggleClass('completed-visible', this._isCompletedTodoVisible);
 
         filter.completed = this._isCompletedTodoVisible ? null : false;
-        this.getEditor().setFilter(filter);        
+        this.getEditor().setFilter(filter);
     };
 
     /**
@@ -207,6 +213,25 @@ define(function(require)
     };
 
     /**
+     * This method is called by TodoEditor when user adds new category
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {String} name - Category name
+     */
+    TodoPanel.prototype._onCategoryAdd = function (name)
+    {
+        if (name.trim().length === 0)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_ADD_CAT_FAILED, Strings.DIALOG_MESSAGE_CAT_NAME_EMPTY);
+        }
+        else
+        {
+            this._callbacks.onCategoryAdd(name);
+        }
+    };
+
+    /**
      * This method is called by TodoEditor, when user edits existing to-do item
      *
      * @memberOf TodoPanel
@@ -226,6 +251,18 @@ define(function(require)
         }
     };
 
+    TodoPanel.prototype._onCategoryEdit = function (id, name)
+    {
+        if (name.trim().length === 0)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_EDIT_CAT_FAILED, Strings.DIALOG_MESSAGE_CAT_NAME_EMPTY);
+        }
+        else
+        {
+            this._callbacks.onCategoryEdit(id, name);
+        }
+    };
+
     /**
      * This method is called by TodoEditor, when user deletes existing to-do item
      *
@@ -236,6 +273,29 @@ define(function(require)
     TodoPanel.prototype._onTodoDelete = function (id)
     {
         this._callbacks.onTodoDelete(id);
+    };
+
+    /**
+     * This method is called by TodoEditor, when user deletes existing category
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Category} category - Category to delete
+     */
+    TodoPanel.prototype._onCategoryDelete = function (category)
+    {
+        var that = this;
+
+        Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_INFO, Strings.DIALOG_TITLE_CONFIRM_CAT_DELETE, StringUtils.format(Strings.DIALOG_MESSAGE_CONFIRM_CAT_DELETE, category.getName()),
+            [{ className: Dialogs.DIALOG_BTN_CLASS_NORMAL,  id: Dialogs.DIALOG_BTN_CANCEL,   text: Strings.CANCEL },
+             { className: Dialogs.DIALOG_BTN_CLASS_PRIMARY, id: Dialogs.DIALOG_BTN_OK,       text: Strings.DELETE }])
+        .done(function (buttonId)
+        {
+            if (buttonId === Dialogs.DIALOG_BTN_OK)
+            {
+                that._callbacks.onCategoryDelete(category.getId());
+            }
+        });
     };
 
     /**
@@ -252,6 +312,7 @@ define(function(require)
         // Enable/disable controls in bar
         this._buttons.reload.toggleClass('disabled', isControlsDisabled);
         this._buttons.addTodo.toggleClass('disabled', isControlsDisabled);
+        this._buttons.addCategory.toggleClass('disabled', isControlsDisabled);
         this._buttons.toggleCompleted.toggleClass('disabled', isControlsDisabled);
         this._buttons.settings.toggleClass('disabled', isControlsDisabled);
 

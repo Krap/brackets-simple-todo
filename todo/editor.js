@@ -5,7 +5,7 @@
  */
 
 /*jslint plusplus: true, devel: true, nomen: true, indent: 4, maxerr: 50, white: true */
-/*global define, $, brackets, window, jQuery, Mustache */
+/*global define, $, brackets, Mustache */
 
 define(function(require)
 {
@@ -21,6 +21,8 @@ define(function(require)
         todoRowHtml         = require('text!html/todo_table_row.html'),
         todoEditHtml        = require('text!html/todo_edit.html'),
         todoDisplayHtml     = require('text!html/todo_display.html'),
+        todoCatDisplayHtml  = require('text!html/todo_cat_display.html'),
+        todoCatEditHtml     = require('text!html/todo_cat_edit.html'),
         stripeSaverHtml     = require('text!html/table_stripe_saver.html');
 
     /**
@@ -80,6 +82,16 @@ define(function(require)
     };
 
     /**
+     * This method is called to initiate creation of a new category
+     *
+     * @memberOf TodoEditor
+     */
+    TodoEditor.prototype.createCategory = function ()
+    {
+        this._createCategory();
+    };
+
+    /**
      * Render given TodoList
      *
      * @memberOf TodoEditor
@@ -107,6 +119,7 @@ define(function(require)
 
         this._mode = TodoEditor.MODE_IDLE;
         this._filter = { 'completed': null };
+        this._cachedCategories = {};
 
         this._callbacks = callbacks;
         this._todoPanel = todoPanel;
@@ -117,6 +130,24 @@ define(function(require)
         this._tableContainer.on('click', '.todo-description', function ()
         {
             that._editTodoItem($(this).data('todo-id'));
+        });
+
+        // Setup callback on to-do item add to specific category
+        this._tableContainer.on('click', '.ovk-todo-add-to-cat', function ()
+        {
+            that._createTodoItem($(this).data('category-id'));
+        });
+
+        // Setup callback on to-do category edit
+        this._tableContainer.on('click', '.todo-category .category-name', function ()
+        {
+            that._editCategory($(this).data('category-id'));
+        });
+
+        // Setup callback on to-do category hide/show
+        this._tableContainer.on('click', '.ovk-todo-fold-cat', function ()
+        {
+            that._toggleCategoryVisibility($(this).data('category-id'));
         });
 
         // Setup callback for completion checkboxes
@@ -137,7 +168,8 @@ define(function(require)
     {
         var that            = this,
             categories      = todoList.getCategoriesList(),
-            categoriesModel = [], category, todo, categoryTodoList, categoryModel, categoryTodoListModel, renderedResult, i, j;
+            categoriesModel = [],
+            categoriesCache = {}, category, todo, categoryTodoList, categoryModel, categoryTodoListModel, renderedResult, numberOfCompleted, i, j;
 
         // Should always have 'uncategorized' category, to be able to easily add to-do item to it
         if (categories.length === 0 || categories[0].getId() !== Category.INVALID_ID)
@@ -150,11 +182,11 @@ define(function(require)
             category = categories[i];
             categoryTodoList = todoList.getTodoListForCategory(category.getId()) || [];
             categoryTodoListModel = [];
+            numberOfCompleted = 0;
             categoryModel =
             {
-                'CATEGORY_NAME':            category.getName(),
                 'CATEGORY_ID':              category.getId(),
-                'UNCATEGORIZED_CATEGORY':   (category.getId() === Category.INVALID_ID)
+                'UNCATEGORIZED_CATEGORY':   category.getId() === Category.INVALID_ID
             };
 
             for (j = 0; j < categoryTodoList.length; ++j)
@@ -167,17 +199,45 @@ define(function(require)
                     'TODO_DESCRIPTION': Mustache.render(todoDisplayHtml, { 'TODO_DESCRIPTION': todo.getDescription() }),
                     'TODO_COMPLETED':   todo.isCompleted()
                 });
+
+                numberOfCompleted += todo.isCompleted() ? 1 : 0;
             }
+
+            categoryModel.CATEGORY_HEADER = Mustache.render(todoCatDisplayHtml,
+            {
+                'CATEGORY_ID':      category.getId(),
+                'CATEGORY_NAME':    category.getName(),
+                'TOTAL_ITEMS':      categoryTodoList.length,
+                'COMPLETED_ITEMS':  numberOfCompleted
+            });
+
+            categoriesCache[category.getId()] =
+            {
+                'totalTodoItems':       categoryTodoList.length,
+                'completedTodoItems':   numberOfCompleted,
+                'visible':              this._cachedCategories[category.getId()] ? this._cachedCategories[category.getId()].visible : true
+            };
 
             categoryModel.RENDERED_TODO_LIST = Mustache.render(todoRowHtml, { 'TODO_LIST': categoryTodoListModel });
             categoriesModel.push(categoryModel);
         }
 
-        renderedResult = Mustache.render(todoTableHtml, { 'CATEGORIES': categoriesModel });
+        renderedResult = Mustache.render(todoTableHtml, { 'CATEGORIES': categoriesModel, 'Strings': Strings });
 
         this._tableContainer.empty().append($(renderedResult));
 
         this._applyFilterIfRequired();
+
+        // Update cached categories data
+        this._cachedCategories = categoriesCache;
+
+        $.each(this._cachedCategories, function (key, value)
+        {
+            if (!value.visible)
+            {
+                that._setCategoryVisible(key, false);
+            }
+        });
     };
 
     /**
@@ -204,6 +264,28 @@ define(function(require)
     TodoEditor.prototype._getRow = function (todoId)
     {
         return this._tableContainer.find('#ovk-todo-item-' + todoId);
+    };
+
+    /**
+     * Get table header row DOM element for a given category
+     *
+     * @param   {Number} categoryId - Category identifier
+     * @returns {Object} Table header row element
+     */
+    TodoEditor.prototype._getCategoryRow = function (categoryId)
+    {
+        return this._tableContainer.find('#ovk-todo-table-category-' + categoryId + ' thead tr');
+    };
+
+    /**
+     * Get table DOM element for a given category
+     *
+     * @param   {Number} categoryId - Category identifier
+     * @returns {Object} Table element
+     */
+    TodoEditor.prototype._getCategoryTable = function (categoryId)
+    {
+        return this._tableContainer.find('#ovk-todo-table-category-' + categoryId);
     };
 
     /**
@@ -248,8 +330,28 @@ define(function(require)
     {
         if (this.getMode() === TodoEditor.MODE_IDLE)
         {
+            if (categoryId !== Category.INVALID_ID)
+            {
+                this._setCategoryVisible(categoryId, true);
+            }
+
             this._startEdit(new TodoItem(), TodoEditor.MODE_ADD, categoryId);
             this._setMode(TodoEditor.MODE_ADD);
+        }
+    };
+
+    /**
+     * Create new category
+     *
+     * @memberOf TodoEditor
+     * @private
+     */
+    TodoEditor.prototype._createCategory = function ()
+    {
+        if (this.getMode() === TodoEditor.MODE_IDLE)
+        {
+            this._editCategoryRow(new Category(TodoEditor.NEW_CATEGORY_ID), TodoEditor.MODE_CAT_ADD);
+            this._setMode(TodoEditor.MODE_CAT_ADD);
         }
     };
 
@@ -272,11 +374,25 @@ define(function(require)
     };
 
     /**
+     * Get Category object by id, from currently rendered to-do list
+     *
+     * @param   {Number}   categoryId -  Category id
+     * @returns {Category} Category object
+     */
+    TodoEditor.prototype._getCategoryFromTable = function (categoryId)
+    {
+        var name        = this._getCategoryRow(categoryId).find('.category-name').text(),
+            category    = new Category(categoryId, name);
+
+        return category;
+    };
+
+    /**
      * Edit existing to-do item
      *
      * @memberOf TodoEditor
      * @private
-     * @param {Number} id - Too-do item id
+     * @param {Number} id - To-do item id
      */
     TodoEditor.prototype._editTodoItem = function (id)
     {
@@ -284,6 +400,22 @@ define(function(require)
         {
             this._startEdit(this._getTodoItemFromTable(id), TodoEditor.MODE_EDIT);
             this._setMode(TodoEditor.MODE_EDIT);
+        }
+    };
+
+    /**
+     * Edit existing to-do category
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param {Number} categoryId - Category id
+     */
+    TodoEditor.prototype._editCategory = function (categoryId)
+    {
+        if (this.getMode() === TodoEditor.MODE_IDLE)
+        {
+            this._editCategoryRow(this._getCategoryFromTable(categoryId), TodoEditor.MODE_CAT_EDIT);
+            this._setMode(TodoEditor.MODE_CAT_EDIT);
         }
     };
 
@@ -306,14 +438,16 @@ define(function(require)
      *
      * @memberOf TodoEditor
      * @private
-     * @param {TodoItem} todo - Edited/added to-do item
+     * @param {TodoItem|Category} todo - Edited/added to-do item or to-do category
      * @param {Number} categoryId - Target category id, when adding new to-do item
      */
     TodoEditor.prototype._acceptEdit = function (todo, categoryId)
     {
-        if (this.getMode() !== TodoEditor.MODE_IDLE)
+        var description, categoryName;
+
+        if (this.getMode() === TodoEditor.MODE_ADD || this.getMode() === TodoEditor.MODE_EDIT)
         {
-            var description = $('.ovk-todo-description-edit').find('.description input').val();
+            description = $('.ovk-todo-description-edit').find('.description input').val();
 
             if (this.getMode() === TodoEditor.MODE_ADD)
             {
@@ -324,6 +458,19 @@ define(function(require)
                 this._callbacks.onEdit(todo.getId(), description, todo.isCompleted());
             }
         }
+        else if(this.getMode() === TodoEditor.MODE_CAT_ADD || this.getMode() === TodoEditor.MODE_CAT_EDIT)
+        {
+            categoryName = $('.ovk-todo-category-edit').find('input').val();
+
+            if (this.getMode() === TodoEditor.MODE_CAT_ADD)
+            {
+                this._callbacks.onCategoryAdd(categoryName);
+            }
+            else if (this.getMode() === TodoEditor.MODE_CAT_EDIT)
+            {
+                this._callbacks.onCategoryEdit(todo.getId(), categoryName);
+            }
+        }
     };
 
     /**
@@ -331,7 +478,7 @@ define(function(require)
      *
      * @memberOf TodoEditor
      * @private
-     * @param {TodoItem} todo - To-do item being edited
+     * @param {TodoItem|Category} todo - To-do item or to-do category being edited (depends on current mode)
      */
     TodoEditor.prototype._declineEdit = function (todo)
     {
@@ -343,6 +490,14 @@ define(function(require)
 
             case TodoEditor.MODE_EDIT:
                 this._editRow(todo, TodoEditor.MODE_IDLE);
+                break;
+
+            case TodoEditor.MODE_CAT_ADD:
+                this._getCategoryTable(todo.getId()).remove();
+                break;
+
+            case TodoEditor.MODE_CAT_EDIT:
+                this._editCategoryRow(todo, TodoEditor.MODE_IDLE);
                 break;
         }
 
@@ -361,6 +516,21 @@ define(function(require)
         if (this.getMode() === TodoEditor.MODE_EDIT)
         {
             this._callbacks.onDelete(todo.getId());
+        }
+    };
+
+    /**
+     * This method is called when user wants to delete category
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param {Category} category - Category object to delete
+     */
+    TodoEditor.prototype._deleteCategory = function (category)
+    {
+        if (this.getMode() === TodoEditor.MODE_CAT_EDIT)
+        {
+            this._callbacks.onCategoryDelete(category);
         }
     };
 
@@ -431,7 +601,7 @@ define(function(require)
      *
      * @memberOf TodoEditor
      * @private
-     * @param {TodoItem} todo       - To-do item to edit
+     * @param {TodoItem} todo       - To-do item to edit/display
      * @param {Number}   mode       - Editor mode
      * @param {Number}   categoryId - Target category id, when adding new to-do item
      */
@@ -464,20 +634,153 @@ define(function(require)
                 {
                     that._acceptEdit(todo, categoryId);
                 }
-            }).find('.controls .edit-accept').on('click', function ()
+            }).on('click', '.edit-accept', function ()
             {
                 that._acceptEdit(todo, categoryId);
-            });
-
-            row.find('.ovk-todo-description-edit').on('click', '.controls .edit-decline', function ()
+            }).on('click', '.edit-decline', function ()
             {
                 that._declineEdit(todo);
             })
-            .on('click', '.controls .edit-delete', function ()
+            .on('click', '.edit-delete', function ()
             {
                 that._deleteTodo(todo);
             })
             .find('.description input').focus();
+        }
+    };
+
+    /**
+     * Set visibility (folding) for a given category
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param {Number}  categoryId - Id of the category
+     * @param {Boolean} isVisible  - Visibility
+     */
+    TodoEditor.prototype._setCategoryVisible = function (categoryId, isVisible)
+    {
+        this._getCategoryTable(categoryId).find('tbody').toggle(isVisible);
+    };
+
+    /**
+     * Toggle category visibility
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param {Number} categoryId - Id of the category
+     */
+    TodoEditor.prototype._toggleCategoryVisibility = function (categoryId)
+    {
+        if (this.getMode() === TodoEditor.MODE_IDLE)
+        {
+            this._cachedCategories[categoryId].visible = !this._cachedCategories[categoryId].visible;
+            this._setCategoryVisible(categoryId, this._cachedCategories[categoryId].visible);
+        }
+    };
+
+    /**
+     * Render category HTML table row for a given category
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param   {Category} category - Category object
+     * @param   {Number}   mode     - Edit mode
+     * @returns {String}   Rendered HTML
+     */
+    TodoEditor.prototype._renderCategoryRow = function (category, mode)
+    {
+        var that = this;
+
+        if (mode === TodoEditor.MODE_IDLE)
+        {
+            return Mustache.render(todoCatDisplayHtml,
+            {
+                'CATEGORY_ID':      category.getId(),
+                'CATEGORY_NAME':    category.getName(),
+                'COMPLETED_ITEMS':  that._cachedCategories[category.getId()].completedTodoItems,
+                'TOTAL_ITEMS':      that._cachedCategories[category.getId()].totalTodoItems,
+                'Strings': Strings
+            });
+        }
+        else
+        {
+            return Mustache.render(todoCatEditHtml,
+            {
+                'CATEGORY_NAME':            category.getName(),
+                'CATEGORY_DELETE_VISIBLE':  mode === TodoEditor.MODE_CAT_EDIT,
+                'Strings': Strings
+            });
+        }
+    };
+
+    /**
+     * Render HTML table for a new category
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param   {Category} category - Category object
+     * @returns {String}   Rendered HTML
+     */
+    TodoEditor.prototype._renderNewCategory = function (category)
+    {
+        return Mustache.render(todoTableHtml,
+        {
+            'CATEGORIES':
+            [{
+                'CATEGORY_ID':     category.getId(),
+                'CATEGORY_HEADER': this._renderCategoryRow(category, TodoEditor.MODE_CAT_ADD)
+            }],
+            'Strings': Strings
+        });
+    };
+
+    /**
+     * Edit given category HTML row
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param {Category} category - Category object to edit/display
+     * @param {Number}   mode     - Editing mode
+     */
+    TodoEditor.prototype._editCategoryRow = function (category, mode)
+    {
+        var that = this, row;
+
+        // Add new table or replace existing table's header
+        if (mode === TodoEditor.MODE_CAT_ADD)
+        {
+            // Add an empty table
+            this._tableContainer.append(this._renderNewCategory(category));
+        }
+        else
+        {
+            this._getCategoryRow(category.getId()).replaceWith($(this._renderCategoryRow(category, mode)));
+        }
+
+        row = this._getCategoryRow(category.getId());
+
+        // Setup callbacks for a new row
+        if (mode !== TodoEditor.MODE_IDLE)
+        {
+            row.keypress(function (event)
+            {
+                // Accept on enter
+                if (event.keyCode === 13)
+                {
+                    that._acceptEdit(category);
+                }
+            }).on('click', '.edit-accept', function ()
+            {
+                that._acceptEdit(category);
+            }).on('click', '.edit-decline', function ()
+            {
+                that._declineEdit(category);
+            })
+            .on('click', '.edit-delete', function ()
+            {
+                that._deleteCategory(category);
+            })
+            .find('input').focus();
         }
     };
 
@@ -488,7 +791,7 @@ define(function(require)
      * @type Number
      * @constant
      */
-    TodoEditor.MODE_IDLE  = 0;
+    TodoEditor.MODE_IDLE = 0;
 
     /**
      * Editor mode, means - adding new to-do item
@@ -497,7 +800,7 @@ define(function(require)
      * @type Number
      * @constant
      */
-    TodoEditor.MODE_ADD   = 1;
+    TodoEditor.MODE_ADD = 1;
 
     /**
      * Editor mode, means - editing existing to-do item
@@ -506,7 +809,25 @@ define(function(require)
      * @type Number
      * @constant
      */
-    TodoEditor.MODE_EDIT  = 2;
+    TodoEditor.MODE_EDIT = 2;
+
+    /**
+     * Editor mode, means - adding new category
+     *
+     * @name TodoEditor#MODE_CAT_ADD
+     * @type Number
+     * @constant
+     */
+    TodoEditor.MODE_CAT_ADD = 3;
+
+    /**
+     * Editor mode, means - editing existing category
+     *
+     * @name TodoEditor#MODE_CAT_EDIT
+     * @type Number
+     * @constant
+     */
+    TodoEditor.MODE_CAT_EDIT = 4;
 
     /**
      * Default filter for to-do items
@@ -516,6 +837,14 @@ define(function(require)
      * @constant
      */
     TodoEditor.DEFAULT_FILTER = { 'completed': null };
+
+    /**
+     * Predefined value for category id for a category being created
+     * @name TodoEditor#NEW_CATEGORY_ID
+     * @type Number
+     * @constant
+     */
+    TodoEditor.NEW_CATEGORY_ID = 99999999;
 
     return TodoEditor;
 });

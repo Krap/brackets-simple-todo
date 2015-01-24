@@ -148,8 +148,11 @@ define(function(require)
             'onClose':              function ()                         { that.toggllePanelVisibility(); },
             'onReload':             function ()                         { that._rereadTodoList(); },
             'onTodoAdd':            function (categoryId, description)  { that._addTodoItem(categoryId, description); },
+            'onCategoryAdd':        function (name)                     { that._addCategory(name); },
             'onTodoEdit':           function (id, description)          { that._editTodoItem(id, description); },
+            'onCategoryEdit':       function (id, name)                 { that._editCategory(id, name); },
             'onTodoDelete':         function (id)                       { that._deleteTodoItem(id); },
+            'onCategoryDelete':     function (id)                       { that._deleteCategory(id); },
             'onCompletionChanged':  function (id, isCompleted)          { that._setTodoItemCompletion(id, isCompleted); },
             'onToggleCompleted':    function ()                         { that._toggleCompletedItemsVisibility(); },
             'onShowSettings':       function ()                         { that._showSettingsDialog(); }
@@ -224,6 +227,28 @@ define(function(require)
     };
 
     /**
+     * Add new category
+     *
+     * @memberOf TodoManager
+     * @private
+     * @param {String} name - Category name
+     */
+    TodoManager.prototype._addCategory = function (name)
+    {
+        var that = this;
+
+        this._provider.addCategory(name)
+        .done(function ()
+        {
+            that._rereadTodoList();
+        })
+        .fail(function (error)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_ADD_CAT_FAILED, error);
+        });
+    };
+
+    /**
      * Edit existing to-do item
      *
      * @memberOf TodoManager
@@ -247,6 +272,29 @@ define(function(require)
     };
 
     /**
+     * Edit existing category
+     *
+     * @memberOf TodoManager
+     * @private
+     * @param {Number} id   - Category id
+     * @param {String} name - New category name
+     */
+    TodoManager.prototype._editCategory = function (id, name)
+    {
+        var that = this;
+
+        this._provider.editCategory(id, name)
+        .done(function ()
+        {
+            that._rereadTodoList();
+        })
+        .fail(function (error)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_EDIT_CAT_FAILED, error);
+        });
+    };
+
+    /**
      * Delete existing to-do item
      *
      * @memberOf TodoManager
@@ -265,6 +313,28 @@ define(function(require)
         .fail(function (error)
         {
             Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_DELETE_TODO_FAILED, error);
+        });
+    };
+
+    /**
+     * Delete existing category
+     *
+     * @memberOf TodoManager
+     * @private
+     * @param {Number} id - Id of the category
+     */
+    TodoManager.prototype._deleteCategory = function (id)
+    {
+        var that = this;
+
+        this._provider.deleteCategory(id)
+        .done(function ()
+        {
+            that._rereadTodoList();
+        })
+        .fail(function (error)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_DELETE_CAT_FAILED, error);
         });
     };
 
