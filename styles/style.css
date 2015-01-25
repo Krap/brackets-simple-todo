@@ -8,6 +8,11 @@
     background-position: 0 -24px;
 }
 
+#ovk-simple-todo-panel .table
+{
+    margin-bottom: 0px;
+}
+
 #ovk-simple-todo-panel .right-icons
 {
     position: absolute;
@@ -20,8 +25,19 @@
 
 #ovk-simple-todo-panel .todo-completion
 {
-    padding-left: 15px;
+    text-align: center;
     width: 30px;
+}
+
+#ovk-simple-todo-panel .todo-completion input
+{
+    margin: 0px;
+}
+
+#ovk-simple-todo-panel .todo-cat-fold
+{
+    width: 30px;
+    text-align: center;
 }
 
 #ovk-simple-todo-panel .todo-description
@@ -43,6 +59,9 @@
 #ovk-simple-todo-panel .todo-category .category-name
 {
     cursor: pointer;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-right: 8px;
 }
 
 #ovk-simple-todo-panel .todo-category .category-name:hover
@@ -50,18 +69,41 @@
     text-decoration: underline;
 }
 
-
-.ovk-todo-description-edit
+#ovk-simple-todo-panel .todo-category .category-stat
 {
-
+    font-style: italic;
+    opacity: 0.8;
+    margin-right: 8px;
 }
 
-.ovk-todo-description-edit .description
+#ovk-simple-todo-panel .ovk-todo-fold-cat
+{
+    background-image: url('icons/cat-visible.svg');
+}
+
+#ovk-simple-todo-panel .ovk-todo-fold-cat.folded
+{
+    background-image: url('icons/cat-hidden.svg');
+}
+
+#ovk-todo-toggle-completed.completed-visible
+{
+    background: url('icons/completed.svg');
+}
+
+.ovk-todo-cat-row
+{
+    border-top: 1px solid rgba(0, 0, 0, 0.30);
+}
+
+.ovk-todo-description-edit .description,
+.ovk-todo-category-edit .category-name-edit
 {
     margin-right: 75px;
 }
 
-.ovk-todo-description-edit .description input
+.ovk-todo-description-edit .description input,
+.ovk-todo-category-edit .category-name-edit input
 {
     margin-bottom: 0px;
     margin-top: 0px;
@@ -70,7 +112,8 @@
     box-sizing: border-box;
 }
 
-.ovk-todo-description-edit .controls
+.ovk-todo-description-edit .controls,
+.ovk-todo-category-edit .controls
 {
     width: 70px;
     line-height: 25px;
@@ -109,7 +152,7 @@
 
 #ovk-todo-cat-add
 {
-    background: url('icons/add.svg');
+    background: url('icons/category.svg');
 }
 
 #ovk-todo-reload
@@ -132,17 +175,20 @@
     background: url('icons/settings.svg');
 }
 
-.ovk-todo-description-edit .edit-accept
+.ovk-todo-description-edit .edit-accept,
+.ovk-todo-category-edit .edit-accept
 {
     background: url('icons/yes.svg');
 }
 
-.ovk-todo-description-edit .edit-decline
+.ovk-todo-description-edit .edit-decline,
+.ovk-todo-category-edit .edit-decline
 {
     background: url('icons/no.svg');
 }
 
-.ovk-todo-description-edit .edit-delete
+.ovk-todo-description-edit .edit-delete,
+.ovk-todo-category-edit .edit-delete
 {
     background: url('icons/delete.svg');
 }
@@ -157,6 +203,12 @@
     background: url('icons/no.svg');
 }
 
+.ovk-table-stripe-saver
+{
+    display: none;
+}
+
+/* Settings */
 ul.ovk-nav-tabs
 {
     list-style: none;
@@ -230,8 +282,5 @@ ul.ovk-nav-tabs:before, ul.ovk-nav-tabs:after
     margin: 0px;
 }
 
-.ovk-table-stripe-saver
-{
-    display: none;
-}
+
 

@@ -208,7 +208,8 @@ define(function(require)
                 'CATEGORY_ID':      category.getId(),
                 'CATEGORY_NAME':    category.getName(),
                 'TOTAL_ITEMS':      categoryTodoList.length,
-                'COMPLETED_ITEMS':  numberOfCompleted
+                'COMPLETED_ITEMS':  numberOfCompleted,
+                'Strings':          Strings
             });
 
             categoriesCache[category.getId()] =
@@ -660,6 +661,7 @@ define(function(require)
     TodoEditor.prototype._setCategoryVisible = function (categoryId, isVisible)
     {
         this._getCategoryTable(categoryId).find('tbody').toggle(isVisible);
+        this._getCategoryTable(categoryId).find('.ovk-todo-fold-cat').toggleClass('folded', !isVisible);
     };
 
     /**

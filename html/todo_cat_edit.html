@@ -1,11 +1,15 @@
 <tr class="ovk-todo-category-edit">
-    <th colspan="2">
-        <input type="text" value="{{ CATEGORY_NAME }}" placeholder="{{ Strings.PLACEHOLDER_CATEGORY }}" />
-
-        <a href="#" class="icon-link edit-accept" title="{{ Strings.EDIT_TOOLTIP_ACCEPT }}">Yes&nbsp;</a>
-        <a href="#" class="icon-link edit-decline" title="{{ Strings.EDIT_TOOLTIP_DECLINE }}">No&nbsp;</a>
-        {{ #CATEGORY_DELETE_VISIBLE }}
-        <a href="#" class="icon-link edit-delete" title="{{ Strings.EDIT_TOOLTIP_DELETE }}">Del&nbsp;</a>
-        {{ /CATEGORY_DELETE_VISIBLE }}
+    <th class="todo-cat-fold"></th>
+    <th>
+        <div class="controls">
+            <a href="#" class="icon-link edit-accept" title="{{ Strings.EDIT_TOOLTIP_ACCEPT }}">&nbsp;</a>
+            <a href="#" class="icon-link edit-decline" title="{{ Strings.EDIT_TOOLTIP_DECLINE }}">&nbsp;</a>
+            {{ #CATEGORY_DELETE_VISIBLE }}
+            <a href="#" class="icon-link edit-delete" title="{{ Strings.EDIT_TOOLTIP_DELETE }}">&nbsp;</a>
+            {{ /CATEGORY_DELETE_VISIBLE }}
+        </div>
+        <div class="category-name-edit">
+            <input type="text" value="{{ CATEGORY_NAME }}" placeholder="{{ Strings.PLACEHOLDER_CATEGORY }}" />
+        </div>
     </th>
 </tr>
