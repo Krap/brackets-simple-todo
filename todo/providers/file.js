@@ -291,7 +291,8 @@ define(function(require)
     FileTodoProvider.prototype._readTodoFile = function ()
     {
         var read    = FileUtils.readAsText(this._todoFile),
-            result  = $.Deferred();
+            result  = $.Deferred(),
+            that    = this;
 
         read.done(function (contents)
         {
@@ -301,7 +302,7 @@ define(function(require)
         {
             if (error !== FileSystemError.NOT_FOUND)
             {
-                result.reject(Strings.FILE_PROVIDER_ERR_READ_FAILED + ': ' + error + '. ' + Strings.FILE_PROVIDER_FILE_NAME + ': ' + this._todoFileFullPath);
+                result.reject(Strings.FILE_PROVIDER_ERR_READ_FAILED + ': ' + FileUtils.getFileErrorString(error) + ' ' + Strings.FILE_PROVIDER_FILE_NAME + ': ' + that._todoFileFullPath);
             }
             else
             {
@@ -377,7 +378,8 @@ define(function(require)
     FileTodoProvider.prototype._save = function ()
     {
         var result  = $.Deferred(),
-            write   = FileUtils.writeText(this._todoFile, this._buildFileContents(this._getCachedTodoList()));
+            write   = FileUtils.writeText(this._todoFile, this._buildFileContents(this._getCachedTodoList())),
+            that    = this;
 
         write.done(function ()
         {
@@ -385,7 +387,7 @@ define(function(require)
         })
         .fail(function (error)
         {
-            result.reject(Strings.FILE_PROVIDER_ERR_WRITE_FAILED + ': ' + error + '. ' + Strings.FILE_PROVIDER_FILE_NAME + ': ' + this._todoFileFullPath);
+            result.reject(Strings.FILE_PROVIDER_ERR_WRITE_FAILED + ': ' + FileUtils.getFileErrorString(error) + ' ' + Strings.FILE_PROVIDER_FILE_NAME + ': ' + that._todoFileFullPath);
         });
 
         return result.promise();
