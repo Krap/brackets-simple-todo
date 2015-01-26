@@ -60,8 +60,8 @@ define(function(require)
      * Delete to-do item
      *
      * @memberOf TodoList
-     * @param {Number} id - Identifier of to-do item to delete
-     * @returns {Boolean} True if item was deleted, false if it was not found
+     * @param {Number|Array} id - Identifier of to-do item to delete, or an Array of identifiers
+     * @returns {Boolean} True if all items were deleted, false otherwise
      */
     TodoList.prototype.deleteTodo = function (id)
     {
@@ -334,21 +334,29 @@ define(function(require)
      *
      * @memberOf TodoList
      * @private
-     * @param {Number} id - Identifier of to-do item to delete
-     * @returns {Boolean} True if item was deleted, false if it was not found
+     * @param {Number|Array} id - Identifier of to-do item to delete, or an Array of identifiers
+     * @returns {Boolean} True if all items were deleted, false otherwise
      */
     TodoList.prototype._deleteTodo = function (id)
     {
-        var i, j;
+        var idToDelete = [].concat(id), idx, i, j;
 
         for (i = 0; i < this._categories.length; ++i)
         {
             for (j = 0; j < this._categories[i].todo.length; ++j)
             {
-                if (this._categories[i].todo[j].getId() === id)
+                idx = idToDelete.indexOf(this._categories[i].todo[j].getId());
+
+                if (idx !== -1)
                 {
                     this._categories[i].todo.splice(j, 1);
-                    return true;
+                    idToDelete.splice(idx, 1);
+                    --j;
+
+                    if (idToDelete.length === 0)
+                    {
+                        return true;
+                    }
                 }
             }
         }

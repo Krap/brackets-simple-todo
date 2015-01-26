@@ -392,7 +392,7 @@ define(function(require)
     TodoManager.prototype._deleteCompletedTodoItems = function ()
     {
         var that    = this,
-            result  = $.Deferred(), i, j, categories, category, todos, deletePromises = [];
+            result  = $.Deferred(), i, j, categories, category, todos, todoIdsToDelete = [];
 
         this._provider.getTodoList()
         .done(function (todoList)
@@ -408,12 +408,19 @@ define(function(require)
                 {
                     if (todos[j].isCompleted())
                     {
-                        deletePromises.push(that._provider.deleteTodo(todos[j].getId()));
+                        todoIdsToDelete.push(todos[j].getId());
                     }
                 }
             }
 
-            $.when.apply($, deletePromises).done(function () { result.resolve(); }).fail(function (error) { result.reject(error); });
+            if (todoIdsToDelete.length > 0)
+            {
+                that._provider.deleteTodo(todoIdsToDelete).done(function () { result.resolve(); }).fail(function (error) { result.reject(error); });
+            }
+            else
+            {
+                result.resolve();
+            }
         })
         .fail(function (error)
         {

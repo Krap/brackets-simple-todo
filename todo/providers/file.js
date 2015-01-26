@@ -102,7 +102,7 @@ define(function(require)
      * Delete existing to-do item. To-do list will be saved to file immediately.
      *
      * @memberOf FileTodoProvider
-     * @param   {Number}    id - To-do item identifier
+     * @param   {Number|Array}    id - To-do item identifier or an Array of identifiers
      * @returns {$.Promise} Promise that will be resolved on success, or rejected with error description on failure
      */
     FileTodoProvider.prototype.deleteTodo = function (id)
