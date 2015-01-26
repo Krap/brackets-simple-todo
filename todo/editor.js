@@ -331,9 +331,9 @@ define(function(require)
     {
         if (this.getMode() === TodoEditor.MODE_IDLE)
         {
-            if (categoryId !== Category.INVALID_ID)
+            if (categoryId !== Category.INVALID_ID && !this._cachedCategories[categoryId].visible)
             {
-                this._setCategoryVisible(categoryId, true);
+                this._toggleCategoryVisibility(categoryId);
             }
 
             this._startEdit(new TodoItem(), TodoEditor.MODE_ADD, categoryId);
@@ -783,6 +783,13 @@ define(function(require)
                 that._deleteCategory(category);
             })
             .find('input').focus();
+        }
+        else
+        {
+            if (this._cachedCategories[category.getId()].visible === false)
+            {
+                this._setCategoryVisible(category.getId(), false);
+            }
         }
     };
 
