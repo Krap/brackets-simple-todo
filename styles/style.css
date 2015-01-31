@@ -120,7 +120,7 @@
     float: right;
 }
 
-#ovk-simple-todo-panel a.icon-link
+#ovk-simple-todo-panel a.ovk-icon-link
 {
     display: inline-block;
     width: 15px;
@@ -134,13 +134,13 @@
     border-color:transparent
 }
 
-#ovk-simple-todo-panel a.icon-link.disabled
+#ovk-simple-todo-panel a.ovk-icon-link.disabled
 {
     opacity: 0.4;
     pointer-events: none;
 }
 
-#ovk-simple-todo-panel a.icon-link:hover
+#ovk-simple-todo-panel a.ovk-icon-link:hover
 {
     opacity: 1;
 }
