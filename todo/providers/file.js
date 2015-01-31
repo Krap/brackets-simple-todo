@@ -174,10 +174,13 @@ define(function(require)
      * This method is called to notify FileTodoProvider that current Brackets project has been changed
      *
      * @memberOf FileTodoProvider
+     * @returns {Boolean} True if reload is required, false otherwise
      */
     FileTodoProvider.prototype.onProjectChanged = function ()
     {
         this._initializeTodoFile();
+        
+        return true;
     };
 
     /**

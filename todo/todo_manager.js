@@ -109,7 +109,10 @@ define(function(require)
      */
     TodoManager.prototype._onProjectChanged = function ()
     {
-        this._provider.onProjectChanged();
+        if (this._provider.onProjectChanged())
+        {
+            this._rereadTodoList();
+        }
     };
 
     /**
