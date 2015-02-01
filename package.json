@@ -7,6 +7,7 @@
     "author": "Oleg Koshelnikov <koshelnikov@gmail.com>",
     "license": "MIT",
     "engines": {
-        "brackets": ">=0.44.0"
-    }
+        "brackets": ">=1.0.0"
+    },
+    "i18n": ["en", "it" ]
 }
