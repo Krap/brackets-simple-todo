@@ -34,7 +34,7 @@ define(
     'DIALOG_TITLE_DEL_COMPLETED_FAILED':'Fallita la cancellazione completa di tutte le attività',
     'DIALOG_TITLE_DELETE_CAT_FAILED':   'Fallita la cancellazione della categoria',
 
-    'DIALOG_TITLE_ADD_CAT_FAILED':      'Fallita l'aggiunta della categoria',
+    'DIALOG_TITLE_ADD_CAT_FAILED':      'Fallita l\'aggiunta della categoria',
 
     'DIALOG_TITLE_EDIT_CAT_FAILED':     'Fallita la modifica della categoria',
     'DIALOG_MESSAGE_CAT_NAME_EMPTY':    'Un nome della categoria è vuoto',
@@ -63,7 +63,7 @@ define(
     'FILE_PROVIDER_ERR_FILENAME_EMPTY': 'Il file delle attività da fare un deve essere vuoto',
     'FILE_PROVIDER_ERR_CAT_MARKER_EMPTY': 'Contrassegno di categoria non deve essere vuoto',
     'FILE_PROVIDER_ERR_MARKER_EMPTY':   'Prefisso di completamento non deve essere vuoto',
-    'FILE_PROVIDER_ERR_MARKERS_SAME':   'Completamento e di categoria prefissi devono essere univoci. Un prefisso non può iniziare con un'altro (es. "abc" e "abcd")',
+    'FILE_PROVIDER_ERR_MARKERS_SAME':   'Completamento e di categoria prefissi devono essere univoci. Un prefisso non può iniziare con un\'altro (es. "abc" e "abcd")',
 
     //
     'PLACEHOLDER_TODO_ITEM':            'Attività da fare',
