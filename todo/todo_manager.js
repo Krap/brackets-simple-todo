@@ -13,6 +13,7 @@ define(function(require)
 
     var Dialogs             = brackets.getModule('widgets/Dialogs'),
         DefaultDialogs      = brackets.getModule('widgets/DefaultDialogs'),
+        CommandManager      = brackets.getModule('command/CommandManager'),
 
         TodoItem            = require('todo/todo_item'),
         TodoPanel           = require('todo/panel'),
@@ -43,19 +44,7 @@ define(function(require)
         this._selectTodoProvider();
         this._initializeUi();
         this._rereadTodoList();
-        this._setTodoPanelVisible(Settings.get(Settings.EXTENSION_ENABLED));
-    };
-
-    /**
-     * Toggle to-do panel visibility. State is saved to settings.
-     * This call does not trigger any data update, i.e. this is only visibility control.
-     *
-     * @memberOf TodoManager
-     */
-    TodoManager.prototype.toggllePanelVisibility = function ()
-    {
-        this._setTodoPanelVisible(Settings.toggle(Settings.EXTENSION_ENABLED));
-        Settings.save();
+        _setTodoPanelVisible(Settings.get(Settings.EXTENSION_ENABLED));
     };
 
     /**
@@ -131,7 +120,7 @@ define(function(require)
             .attr('id', TodoManager.EXTENSION_ICON_ID)
             .attr('href', '#')
             .attr('title', Strings.EXTENSION_NAME)
-            .on('click', function () { that.toggllePanelVisibility(); })
+            .on('click', _setTodoPanelVisible)
             .appendTo($('#main-toolbar .buttons'));
     };
 
@@ -148,7 +137,7 @@ define(function(require)
         // Initialize to-do panel
         this._panel = new TodoPanel(
         {
-            'onClose':              function ()                         { that.toggllePanelVisibility(); },
+            'onClose':              _setTodoPanelVisible,
             'onReload':             function ()                         { that._rereadTodoList(); },
             'onTodoAdd':            function (categoryId, description)  { that._addTodoItem(categoryId, description); },
             'onCategoryAdd':        function (name)                     { that._addCategory(name); },
@@ -165,24 +154,16 @@ define(function(require)
     };
 
     /**
-     * Show/hide to-do panel. Does not saved to settings.
+     * Toggles panel visibility and update the settings.
+     * Specify value for `showFlag` to override the default
+     * toggle behavior; other leave it undefined.
      *
-     * @memberOf TodoManager
      * @private
-     * @param {Boolean} isVisible - True to show panel, false to hide
+     * @param {Boolean} [showFlag] - True to show panel, false to hide
      */
-    TodoManager.prototype._setTodoPanelVisible = function (isVisible)
+    function _setTodoPanelVisible(showFlag)
     {
-        if (!!isVisible)
-        {
-            $('#' + TodoManager.EXTENSION_ICON_ID).addClass('active');
-        }
-        else
-        {
-            $('#' + TodoManager.EXTENSION_ICON_ID).removeClass('active');
-        }
-
-        this._panel.setVisible(!!isVisible);
+        CommandManager.execute(Strings.COMMAND_TOGGLE, showFlag)
     };
 
     /**
