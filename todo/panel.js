@@ -16,7 +16,11 @@ define(function(require)
         StringUtils         = brackets.getModule('utils/StringUtils'),
         Dialogs             = brackets.getModule('widgets/Dialogs'),
         DefaultDialogs      = brackets.getModule('widgets/DefaultDialogs'),
+        CommandManager      = brackets.getModule('command/CommandManager'),
+        KeyBindingManager   = brackets.getModule('command/KeyBindingManager'),
+        _                   = brackets.getModule('thirdparty/lodash'),
 
+        Settings            = require('todo/settings'),
         Strings             = require('todo/strings'),
 
         TodoEditor          = require('todo/editor'),
@@ -69,17 +73,6 @@ define(function(require)
         return this._editor;
     };
 
-    /**
-     * Show/hide to-do panel
-     *
-     * @memberOf TodoPanel
-     * @param {Boolean} isVisible - True to show, false to hide
-     */
-    TodoPanel.prototype.setVisible = function (isVisible)
-    {
-        this._setVisible(isVisible);
-    };
-
     /****************************** PRIVATE ******************************/
 
     /**
@@ -95,6 +88,11 @@ define(function(require)
 
         this._callbacks = callbacks;
         this._initializePanel();
+
+        // Registers Toggle Panel Command
+        CommandManager.register(Strings.PANEL_TOGGLE, Strings.COMMAND_TOGGLE, _.bind(_setVisible, this))
+        // Adds Keybinding for Toggle Command
+        KeyBindingManager.addBinding(Strings.COMMAND_TOGGLE, "Ctrl-Shift-T")
 
         // Create to-do editor inside panel
         this._editor = new TodoEditor(this._panel,
@@ -174,23 +172,50 @@ define(function(require)
     };
 
     /**
-     * Show/hide to-do panel
+     * Function called when Command id `Strings.COMMAND_TOGGLE`
+     * is executed.
      *
-     * @memberOf TodoPanel
-     * @private
-     * @param {Boolean} isVisible - True to show, false to hide
+     * Default behavior is to toggle (show/hide) the to-do panel.
+     * Specify `showFlag` to override the default behavior.
+     *
+     * @param {Boolean} [showFlag] - `true` to show the panel
+     *                               `false` to hide the panel
      */
-    TodoPanel.prototype._setVisible = function (isVisible)
+    function _setVisible (showFlag)
     {
-        if (!!isVisible)
+        switch (showFlag)
         {
-            Resizer.show(this._panel);
+            case true:
+                this._showPanel();
+                break;
+            case false:
+                this._hidePanel();
+                break;
+            default:
+                if (Settings.get(Settings.EXTENSION_ENABLED))
+                {
+                    this._hidePanel();
+                }
+                else
+                {
+                    this._showPanel();
+                }
         }
-        else
-        {
-            Resizer.hide(this._panel);
-        }
-    };
+    }
+
+    TodoPanel.prototype._showPanel = function () {
+        Resizer.show(this._panel);
+        $('#ovk-todo-toolbar-icon').addClass('active');
+        Settings.set(Settings.EXTENSION_ENABLED, true)
+        Settings.save()
+    }
+
+    TodoPanel.prototype._hidePanel = function () {
+        Resizer.hide(this._panel);
+        $('#ovk-todo-toolbar-icon').removeClass('active');
+        Settings.set(Settings.EXTENSION_ENABLED, false)
+        Settings.save()
+    }
 
     /**
      * This method is called by TodoEditor, when user adds new to-do item
