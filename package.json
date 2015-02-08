@@ -3,7 +3,7 @@
     "title": "Simple To-Do",
     "description": "Simple to-do list for Brackets. Tasks stored in human readable/editable text files.",
     "homepage": "https://github.com/ovk/brackets-simple-todo",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "author": "Oleg Koshelnikov <koshelnikov@gmail.com>",
     "license": "MIT",
     "engines": {
