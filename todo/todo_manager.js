@@ -97,8 +97,18 @@ define(function(require)
      */
     TodoManager.prototype._selectTodoProvider = function ()
     {
-        // For now there is only one provider available. For future - read current provider from settings
-        this._provider = new this._providers[0](Settings.getProviderSettings(this._providers[0].settings));
+        var selectedProviderId = Settings.get(Settings.CURRENT_PROVIDER), providerIndex = 0, i;
+
+        for (i = 0; i < this._providers.length; ++i)
+        {
+            if (this._providers[i].settings.SETTINGS_ID === selectedProviderId)
+            {
+                providerIndex = i;
+                break;
+            }
+        }
+
+        this._provider = new this._providers[providerIndex](Settings.getProviderSettings(this._providers[providerIndex].settings));
     };
 
     /**
@@ -441,7 +451,10 @@ define(function(require)
      */
     TodoManager.prototype._showSettingsDialog = function ()
     {
-        var that = this, providersSettingsList = [], i, deleteCompletedPromise = $.Deferred().resolve();
+        var that = this,
+            providersSettingsList = [],
+            selectedProviderId = Settings.get(Settings.CURRENT_PROVIDER),
+            deleteCompletedPromise = $.Deferred().resolve(), i;
 
         // Prepare array of settings for each provider
         for (i = 0; i < this._providers.length; ++i)
@@ -453,6 +466,11 @@ define(function(require)
         SettingsDialog.show(providersSettingsList)
         .done(function ()
         {
+            if (selectedProviderId !== Settings.get(Settings.CURRENT_PROVIDER))
+            {
+                that._selectTodoProvider();
+            }
+
             // Delete completed to-do items
             if(Settings.get(Settings.DELETE_COMPLETED_TODO))
             {

@@ -8,6 +8,8 @@ define(function(require)
     var Preferences         = brackets.getModule("preferences/PreferencesManager"),
         ExtPreferences      = Preferences.getExtensionPrefs('ovk.simple-todo'),
 
+        FileTodoProvider    = require('todo/providers/file'),
+
         parameters          = {},
         settingsDefinition;
 
@@ -22,12 +24,14 @@ define(function(require)
     parameters.EXTENSION_ENABLED          = 'enabled';
     parameters.COMPLETED_TODO_VISIBLE     = 'completedVisible';
     parameters.DELETE_COMPLETED_TODO      = 'deleteCompleted';
+    parameters.CURRENT_PROVIDER           = 'todoProvider';
 
     settingsDefinition =
     [
         { 'name': parameters.EXTENSION_ENABLED,         'type': 'boolean',  'default': true },
         { 'name': parameters.COMPLETED_TODO_VISIBLE,    'type': 'boolean',  'default': true },
-        { 'name': parameters.DELETE_COMPLETED_TODO,     'type': 'boolean',  'default': false }
+        { 'name': parameters.DELETE_COMPLETED_TODO,     'type': 'boolean',  'default': false },
+        { 'name': parameters.CURRENT_PROVIDER,          'type': 'string',   'default': FileTodoProvider.settings.SETTINGS_ID }
     ];
 
     initialize();

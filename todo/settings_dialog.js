@@ -83,6 +83,7 @@ define(function(require)
                 Settings.setProviderSettings(value.definition, value.settings);
             });
 
+            Settings.set(Settings.CURRENT_PROVIDER, $('#ovk-simple-todo-settings-provider-id').val());
             Settings.set(Settings.DELETE_COMPLETED_TODO, isDeleteCompleted);
             Settings.save();
             promise.resolve();
@@ -98,7 +99,10 @@ define(function(require)
 
     function show(definitions)
     {
-        var providersArray = [], selectedTabId = '#ovk-tab-settings-general', result = $.Deferred();
+        var providersArray = [],
+            selectedTabId = '#ovk-tab-settings-general',
+            selectedProviderId = Settings.get(Settings.CURRENT_PROVIDER),
+            result = $.Deferred();
 
         providers = definitions;
 
@@ -109,6 +113,15 @@ define(function(require)
             for (i = 0; i < settings.PARAMETERS.length; ++i)
             {
                 settings.PARAMETERS[i]['TYPE_' + settings.PARAMETERS[i].TYPE.toUpperCase()] = true;
+            }
+
+            settings.SELECTED = selectedProviderId === settings.SETTINGS_ID;
+            settings.HAS_CUSTOM_TEMPLATE = false;
+
+            if (settings.CUSTOM_TEMPLATE)
+            {
+                settings.RENDERED_CUSTOM_HTML = Mustache.render(settings.CUSTOM_TEMPLATE.HTML, {  });
+                settings.HAS_CUSTOM_TEMPLATE = true;
             }
 
             providersArray.push({ 'provider': settings });

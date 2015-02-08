@@ -65,6 +65,9 @@ define(
     'FILE_PROVIDER_ERR_MARKER_EMPTY':   'Completion prefix must not be empty',
     'FILE_PROVIDER_ERR_MARKERS_SAME':   'Completion and category prefixes must be unique. One prefix cannot start with another (e.g. "abc" and "abcd")',
 
+    'TRELLO_PROVIDER_TOKEN_PLACEHOLDER':'Paste Your Trello Token Here',
+    'TRELLO_PROVIDER_USER_PLACEHOLDER': 'Trello User Id',
+
     //
     'PLACEHOLDER_TODO_ITEM':            'To-Do Item',
     'PLACEHOLDER_CATEGORY':             'Category Name'

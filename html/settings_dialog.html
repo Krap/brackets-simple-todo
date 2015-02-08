@@ -22,8 +22,10 @@
 
                         <div class="settings-row">
                             <label>{{ Strings.SETTINGS_TODO_STORAGE }}</label>
-                            <select>
-                                <option>{{ Strings.SETTINGS_FILE_PROVIDER_NAME }}</option>
+                            <select id="ovk-simple-todo-settings-provider-id">
+                                {{ #Providers }}
+                                <option value="{{ provider.SETTINGS_ID }}" {{ #provider.SELECTED }} selected {{ /provider.SELECTED }}>{{ provider.PROVIDER_NAME }}</option>
+                                {{ /Providers }}
                             </select>
                         </div>
 
@@ -35,18 +37,23 @@
                 </div>
 
                 {{ #Providers }}
-                <div class="tab-pane" id="ovk-tab-{{ provider.SETTINGS_ID }}">
-                    <fieldset>
-                    {{ #provider.PARAMETERS }}
-                        <label>{{ NAME }}</label>
+                    <div class="tab-pane" id="ovk-tab-{{ provider.SETTINGS_ID }}">
+                        {{ ^provider.HAS_CUSTOM_TEMPLATE }}                        
+                            <fieldset>
+                            {{ #provider.PARAMETERS }}
+                                <label>{{ NAME }}</label>
 
-                        {{ #TYPE_STRING }}
-                        <input type="text" id="ovk-param-{{ provider.SETTINGS_ID }}-{{ ID }}" />
-                        {{ /TYPE_STRING }}
+                                {{ #TYPE_STRING }}
+                                <input type="text" id="ovk-param-{{ provider.SETTINGS_ID }}-{{ ID }}" {{ #PLACEHOLDER }} placeholder="{{ PLACEHOLDER }}" {{ /PLACEHOLDER }}/>
+                                {{ /TYPE_STRING }}
 
-                    {{ /provider.PARAMETERS }}
-                    </fieldset>
-                </div>
+                            {{ /provider.PARAMETERS }}
+                            </fieldset>
+                        {{ /provider.HAS_CUSTOM_TEMPLATE }}
+                        {{ #provider.HAS_CUSTOM_TEMPLATE }}
+                            {{{ provider.RENDERED_CUSTOM_HTML }}}
+                        {{ /provider.HAS_CUSTOM_TEMPLATE }}
+                    </div>
                 {{ /Providers }}
             </div>
          </div>

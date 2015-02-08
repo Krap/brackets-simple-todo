@@ -16,6 +16,7 @@ define(function (require, exports, module)
         ProjectManager      = brackets.getModule('project/ProjectManager'),
 
         FileTodoProvider    = require('todo/providers/file'),
+        TrelloTodoProvider  = require('todo/providers/trello'),
         TodoManager         = require('todo/todo_manager'),
 
         todoManager;
@@ -29,7 +30,7 @@ define(function (require, exports, module)
     // Init
     AppInit.appReady(function()
     {
-        todoManager.initialize([ FileTodoProvider ]);
+        todoManager.initialize([ FileTodoProvider, TrelloTodoProvider ]);
 
         $(ProjectManager).on('projectOpen', function ()
         {
