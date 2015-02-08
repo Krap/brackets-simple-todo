@@ -12,6 +12,8 @@ define(
     'CANCEL':                           'Cancel',
     'DELETE':                           'Delete',
 
+    'COMMAND_TOGGLE':                   'ovk.todo.panel.togle',
+    'PANEL_TOGGLE':                     'Show Simple To-Do',
     'PANEL_TOOLTIP_ADD_TODO':           'Add new to-do item',
     'PANEL_TOOLTIP_ADD_CATEGORY':       'Add new category',
     'PANEL_TOOLTIP_ADD_TO_CAT_TODO':    'Add to-do item to this category',
