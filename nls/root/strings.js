@@ -3,6 +3,8 @@
 
 define(
 {
+    'COMMAND_TOGGLE':                   'ovk.todo.panel.togle',
+
     //
     'EXTENSION_NAME':                   'Simple To-Do',
 
@@ -12,7 +14,6 @@ define(
     'CANCEL':                           'Cancel',
     'DELETE':                           'Delete',
 
-    'COMMAND_TOGGLE':                   'ovk.todo.panel.togle',
     'PANEL_TOGGLE':                     'Show Simple To-Do',
     'PANEL_TOOLTIP_ADD_TODO':           'Add new to-do item',
     'PANEL_TOOLTIP_ADD_CATEGORY':       'Add new category',
@@ -21,6 +22,7 @@ define(
     'PANEL_TOOLTIP_RELOAD_TODO':        'Reload to-do items',
     'PANEL_TOOLTIP_TOGGLE_COMPLETED':   'Show/Hide completed to-do items',
     'PANEL_TOOLTIP_SETTINGS':           'Settings',
+    'PANEL_COMPLETED':                  'completed',
 
     'EDIT_TOOLTIP_ACCEPT':              'Accept changes',
     'EDIT_TOOLTIP_DECLINE':             'Decline changes',

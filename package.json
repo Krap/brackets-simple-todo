@@ -9,5 +9,5 @@
     "engines": {
         "brackets": ">=1.0.0"
     },
-    "i18n": ["en", "it" ]
+    "i18n": [ "en", "it", "uk", "ru" ]
 }
