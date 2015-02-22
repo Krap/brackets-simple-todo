@@ -52,6 +52,8 @@ These buttons are (left-to-right):
 2. Decline changes. If task/category is being added this button means 'do not add'.
 3. Delete task/category. This button is only available when editing existing task/category.
 
+To add task to any category, click on the 'plus' icon near the category name.
+
 ## General Settings
 ![gensettings](https://cloud.githubusercontent.com/assets/693072/6320664/0ae292a0-bab2-11e4-99d8-40abd7cc28d4.png)
 
@@ -96,7 +98,7 @@ _**Important:** backup your to-do file before changing any prefixes. Simple To-D
 ## Trello Storage
 You can connect Simple To-Do to your [Trello](https://trello.com) account and store your to-do list as a Trello list. Thus, you can access it from different computers or via Trello website.
 
-_Note: Trello storage doesn't support uncategorized tasks, i.e. each task should be within some category. _
+_Note: Trello storage doesn't support uncategorized tasks, i.e. each task should be within some category._
 
 To use Trello storage you should provide your Trello API Key and Token (so Simple To-Do can authenticate to Trello) and select board and list where to store your to-do list.
 
