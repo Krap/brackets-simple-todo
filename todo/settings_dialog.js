@@ -22,16 +22,24 @@ define(function(require)
         deleteCompletedWarningShown = false;
 
         $('#ovk-settings-delete-completed').prop('checked', Settings.get(Settings.DELETE_COMPLETED_TODO));
+        $('#ovk-settings-toggle-panel-hotkey').val(Settings.get(Settings.TOGGLE_PANEL_HOTKEY));
 
         $.each(providers, function (index, definition)
         {
             var settings = Settings.getProviderSettings(definition);
 
-            $.each(settings, function (index, value)
+            if (definition.CUSTOM_TEMPLATE)
             {
-                var globalId = '#ovk-param-' + definition.SETTINGS_ID + '-' + index;
-                dialog.getElement().find(globalId).val(value);
-            });
+                definition.CUSTOM_TEMPLATE.SET(dialog.getElement(), settings);
+            }
+            else
+            {
+                $.each(settings, function (index, value)
+                {
+                    var globalId = '#ovk-param-' + definition.SETTINGS_ID + '-' + index;
+                    dialog.getElement().find(globalId).val(value);
+                });
+            }
         });
     }
 
@@ -53,11 +61,18 @@ define(function(require)
         {
             var settings = {};
 
-            $.each(definition.PARAMETERS, function (index, value)
+            if (definition.CUSTOM_TEMPLATE)
             {
-                var globalId = '#ovk-param-' + definition.SETTINGS_ID + '-' + value.ID;
-                settings[value.ID] = dialog.getElement().find(globalId).val();
-            });
+                settings = definition.CUSTOM_TEMPLATE.GET(dialog.getElement());
+            }
+            else
+            {
+                $.each(definition.PARAMETERS, function (index, value)
+                {
+                    var globalId = '#ovk-param-' + definition.SETTINGS_ID + '-' + value.ID;
+                    settings[value.ID] = dialog.getElement().find(globalId).val();
+                });
+            }
 
             providersSettings.push({ 'definition': definition, 'settings': settings });
 
@@ -85,6 +100,7 @@ define(function(require)
 
             Settings.set(Settings.CURRENT_PROVIDER, $('#ovk-simple-todo-settings-provider-id').val());
             Settings.set(Settings.DELETE_COMPLETED_TODO, isDeleteCompleted);
+            Settings.set(Settings.TOGGLE_PANEL_HOTKEY, $('#ovk-settings-toggle-panel-hotkey').val());
             Settings.save();
             promise.resolve();
             dialog.close();
@@ -99,10 +115,10 @@ define(function(require)
 
     function show(definitions)
     {
-        var providersArray = [],
-            selectedTabId = '#ovk-tab-settings-general',
-            selectedProviderId = Settings.get(Settings.CURRENT_PROVIDER),
-            result = $.Deferred();
+        var providersArray      = [],
+            selectedTabId       = '#ovk-tab-settings-general',
+            selectedProviderId  = Settings.get(Settings.CURRENT_PROVIDER),
+            result              = $.Deferred();
 
         providers = definitions;
 
@@ -115,12 +131,12 @@ define(function(require)
                 settings.PARAMETERS[i]['TYPE_' + settings.PARAMETERS[i].TYPE.toUpperCase()] = true;
             }
 
-            settings.SELECTED = selectedProviderId === settings.SETTINGS_ID;
+            settings.SELECTED = (selectedProviderId === settings.SETTINGS_ID);
             settings.HAS_CUSTOM_TEMPLATE = false;
 
             if (settings.CUSTOM_TEMPLATE)
             {
-                settings.RENDERED_CUSTOM_HTML = Mustache.render(settings.CUSTOM_TEMPLATE.HTML, {  });
+                settings.RENDERED_CUSTOM_HTML = settings.CUSTOM_TEMPLATE.RENDER();
                 settings.HAS_CUSTOM_TEMPLATE = true;
             }
 

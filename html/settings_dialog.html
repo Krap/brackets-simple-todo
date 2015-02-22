@@ -21,6 +21,11 @@
                         <legend>{{ Strings.SETTINGS_GENERAL }}</legend>
 
                         <div class="settings-row">
+                            <label>{{ Strings.SETTINGS_TOGGLE_PANEL_HOTKEY }}</label>
+                            <input type="text" id="ovk-settings-toggle-panel-hotkey" />
+                        </div>
+
+                        <div class="settings-row">
                             <label>{{ Strings.SETTINGS_TODO_STORAGE }}</label>
                             <select id="ovk-simple-todo-settings-provider-id">
                                 {{ #Providers }}
@@ -33,12 +38,14 @@
                             <label>{{ Strings.SETTINGS_DELETE_COMPLETED }}</label>
                             <input type="checkbox" id="ovk-settings-delete-completed" /><span class="text-muted"> ({{ Strings.SETTINGS_DELETE_COMPLETED_WARN }})</span>
                         </div>
+
                     </fieldset>
                 </div>
 
                 {{ #Providers }}
                     <div class="tab-pane" id="ovk-tab-{{ provider.SETTINGS_ID }}">
-                        {{ ^provider.HAS_CUSTOM_TEMPLATE }}                        
+                        <!-- Auto-generated settings page -->
+                        {{ ^provider.HAS_CUSTOM_TEMPLATE }}
                             <fieldset>
                             {{ #provider.PARAMETERS }}
                                 <label>{{ NAME }}</label>
@@ -50,6 +57,8 @@
                             {{ /provider.PARAMETERS }}
                             </fieldset>
                         {{ /provider.HAS_CUSTOM_TEMPLATE }}
+
+                        <!-- Custom settings page -->
                         {{ #provider.HAS_CUSTOM_TEMPLATE }}
                             {{{ provider.RENDERED_CUSTOM_HTML }}}
                         {{ /provider.HAS_CUSTOM_TEMPLATE }}

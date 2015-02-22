@@ -18,7 +18,6 @@ define(function(require)
         DefaultDialogs      = brackets.getModule('widgets/DefaultDialogs'),
         CommandManager      = brackets.getModule('command/CommandManager'),
         KeyBindingManager   = brackets.getModule('command/KeyBindingManager'),
-        _                   = brackets.getModule('thirdparty/lodash'),
 
         Settings            = require('todo/settings'),
         Strings             = require('todo/strings'),
@@ -84,15 +83,21 @@ define(function(require)
      */
     TodoPanel.prototype._initialize = function (callbacks)
     {
-        var that = this;
+        var that = this, hotkey;
 
         this._callbacks = callbacks;
         this._initializePanel();
 
-        // Registers Toggle Panel Command
-        CommandManager.register(Strings.PANEL_TOGGLE, Strings.COMMAND_TOGGLE, _.bind(_setVisible, this))
-        // Adds Keybinding for Toggle Command
-        KeyBindingManager.addBinding(Strings.COMMAND_TOGGLE, "Ctrl-Shift-T")
+        // Register Toggle Panel Command
+        CommandManager.register(Strings.PANEL_TOGGLE, Strings.COMMAND_TOGGLE, function (isVisible) { that._setVisible(isVisible); });
+
+        // Add Keybinding for Toggle Command
+        hotkey = Settings.get(Settings.TOGGLE_PANEL_HOTKEY);
+
+        if (hotkey && hotkey.length > 0)
+        {
+            KeyBindingManager.addBinding(Strings.COMMAND_TOGGLE, hotkey);
+        }
 
         // Create to-do editor inside panel
         this._editor = new TodoEditor(this._panel,
@@ -172,18 +177,17 @@ define(function(require)
     };
 
     /**
-     * Function called when Command id `Strings.COMMAND_TOGGLE`
-     * is executed.
-     *
+     * Function called when Command id `Strings.COMMAND_TOGGLE` is executed.
      * Default behavior is to toggle (show/hide) the to-do panel.
-     * Specify `showFlag` to override the default behavior.
+     * Specify `isVisible` to override the default behavior.
      *
-     * @param {Boolean} [showFlag] - `true` to show the panel
-     *                               `false` to hide the panel
+     * @memberOf TodoPanel
+     * @private
+     * @param {Boolean} [isVisible] - `true` to show the panel, `false` to hide the panel
      */
-    function _setVisible (showFlag)
+    TodoPanel.prototype._setVisible = function (isVisible)
     {
-        switch (showFlag)
+        switch (isVisible)
         {
             case true:
                 this._showPanel();
@@ -201,21 +205,35 @@ define(function(require)
                     this._showPanel();
                 }
         }
-    }
+    };
 
-    TodoPanel.prototype._showPanel = function () {
+    /**
+     * Show to-do panel and save this state to settings
+     *
+     * memberOf TodoPanel
+     * @private
+     */
+    TodoPanel.prototype._showPanel = function ()
+    {
         Resizer.show(this._panel);
         $('#ovk-todo-toolbar-icon').addClass('active');
-        Settings.set(Settings.EXTENSION_ENABLED, true)
-        Settings.save()
-    }
+        Settings.set(Settings.EXTENSION_ENABLED, true);
+        Settings.save();
+    };
 
-    TodoPanel.prototype._hidePanel = function () {
+    /**
+     * Hide to-do panel and save this state to settings
+     *
+     * memberOf TodoPanel
+     * @private
+     */
+    TodoPanel.prototype._hidePanel = function ()
+    {
         Resizer.hide(this._panel);
         $('#ovk-todo-toolbar-icon').removeClass('active');
-        Settings.set(Settings.EXTENSION_ENABLED, false)
-        Settings.save()
-    }
+        Settings.set(Settings.EXTENSION_ENABLED, false);
+        Settings.save();
+    };
 
     /**
      * This method is called by TodoEditor, when user adds new to-do item
@@ -276,6 +294,14 @@ define(function(require)
         }
     };
 
+    /**
+     * This method is called by TodoEditor, when user edits existing category
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Number} id    - Category identifier
+     * @param {String} name  - New category's name
+     */
     TodoPanel.prototype._onCategoryEdit = function (id, name)
     {
         if (name.trim().length === 0)

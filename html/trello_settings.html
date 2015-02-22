@@ -1,6 +1,50 @@
+<!-- Authentication to Trello -->
 <fieldset>
-    <label>Param</label>
+    <legend>{{ Strings.TRELLO_PROVIDER_SETTINGS_AUTH_LEGEND }}</legend>
 
-    <input type="text" />
+    <!-- Trello API Key -->
+    <div class="settings-row">
+        <label></label>
+        <a href="{{ GET_KEY_URL }}"> {{ Strings.TRELLO_PROVIDER_SETTINGS_GET_KEY }}</a>
+    </div>
+    <div class="settings-row">
+        <label>{{ Strings.TRELLO_PROVIDER_SETTINGS_KEY_LABEL }}</label>
+        <input type="text" id="ovk-simple-todo-trello-key" placeholder="{{ Strings.TRELLO_PROVIDER_KEY_PLACEHOLDER }}" />
+    </div>
 
+    <!-- Trello User Token -->
+    <div class="settings-row">
+        <label></label>
+        <a id="ovk-simple-todo-trello-get-token" href="#"> {{ Strings.TRELLO_PROVIDER_SETTINGS_GET_TOKEN }}</a>
+    </div>
+    <div class="settings-row">
+        <label>{{ Strings.TRELLO_PROVIDER_SETTINGS_TOKEN_LABEL }}</label>
+        <input type="text" id="ovk-simple-todo-trello-token" placeholder="{{ Strings.TRELLO_PROVIDER_TOKEN_PLACEHOLDER }}" />
+    </div>
 </fieldset>
+
+<!-- Select Trello List -->
+<fieldset>
+    <legend>{{ Strings.TRELLO_PROVIDER_SETTINGS_LIST_LEGEND }}</legend>
+
+    <!-- Refresh board and list -->
+    <div class="settings-row">
+        <label></label>
+        <a id="ovk-simple-todo-trello-refresh" href="#"> {{ Strings.TRELLO_PROVIDER_SETTINGS_REFRESH }}</a>
+    </div>
+
+    <!-- Board -->
+    <div class="settings-row">
+        <label>{{ Strings.TRELLO_PROVIDER_SETTINGS_BOARD_LABEL }}</label>
+        <select disabled id="ovk-simple-todo-trello-board"></select>
+    </div>
+
+    <!-- List -->
+    <div class="settings-row">
+        <label>{{ Strings.TRELLO_PROVIDER_SETTINGS_LIST_LABEL }}</label>
+        <select disabled id="ovk-simple-todo-trello-list"></select>
+    </div>
+</fieldset>
+
+<!-- Place for errors -->
+<div id="ovk-simple-todo-trello-error"></div>

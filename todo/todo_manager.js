@@ -44,7 +44,7 @@ define(function(require)
         this._selectTodoProvider();
         this._initializeUi();
         this._rereadTodoList();
-        _setTodoPanelVisible(Settings.get(Settings.EXTENSION_ENABLED));
+        this._setTodoPanelVisible(Settings.get(Settings.EXTENSION_ENABLED));
     };
 
     /**
@@ -130,7 +130,7 @@ define(function(require)
             .attr('id', TodoManager.EXTENSION_ICON_ID)
             .attr('href', '#')
             .attr('title', Strings.EXTENSION_NAME)
-            .on('click', _setTodoPanelVisible)
+            .on('click', function () { that._setTodoPanelVisible(); })
             .appendTo($('#main-toolbar .buttons'));
     };
 
@@ -147,7 +147,7 @@ define(function(require)
         // Initialize to-do panel
         this._panel = new TodoPanel(
         {
-            'onClose':              _setTodoPanelVisible,
+            'onClose':              function ()                         { that._setTodoPanelVisible(); },
             'onReload':             function ()                         { that._rereadTodoList(); },
             'onTodoAdd':            function (categoryId, description)  { that._addTodoItem(categoryId, description); },
             'onCategoryAdd':        function (name)                     { that._addCategory(name); },
@@ -165,15 +165,16 @@ define(function(require)
 
     /**
      * Toggles panel visibility and update the settings.
-     * Specify value for `showFlag` to override the default
+     * Specify value for `isVisible` to override the default
      * toggle behavior; other leave it undefined.
      *
+     * @memberOf TodoManager
      * @private
-     * @param {Boolean} [showFlag] - True to show panel, false to hide
+     * @param {Boolean} [isVisible] - True to show panel, false to hide
      */
-    function _setTodoPanelVisible(showFlag)
+    TodoManager.prototype._setTodoPanelVisible = function (isVisible)
     {
-        CommandManager.execute(Strings.COMMAND_TOGGLE, showFlag)
+        CommandManager.execute(Strings.COMMAND_TOGGLE, isVisible);
     };
 
     /**

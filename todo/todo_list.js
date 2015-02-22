@@ -33,7 +33,7 @@ define(function(require)
      * @memberOf TodoList
      * @param {Number}   categoryId - Identifier of the existing category for to-di item. Value of {@link Category#INVALID_ID} means item is uncategorized.
      * @param {TodoItem} todo       - To-do item to insert
-     * @returns {Boolean} True if item was added, false otherwise
+     * @returns {TodoItem|null} Added TodoItem object, or null if operation failed
      */
     TodoList.prototype.addTodo = function (categoryId, todo)
     {
@@ -47,12 +47,11 @@ define(function(require)
 
         if (category !== null)
         {
-            this._addTodoToCategory(category, todo);
-            return true;
+            return this._addTodoToCategory(category, todo);
         }
         else
         {
-            return false;
+            return null;
         }
     };
 
@@ -167,7 +166,31 @@ define(function(require)
         return this._getTodoListForCategory(categoryId);
     };
 
-    /* PRIVATE */
+    /**
+     * Get Category object which contains given to-do item
+     *
+     * @memberOf TodoList
+     * @param   {Number}        todoId - To-do identifier
+     * @returns {Category|null} Category object, or null if it is not found
+     */
+    TodoList.prototype.getCategoryContainingTodo = function (todoId)
+    {
+        return this._getCategoryContainingTodo(todoId);
+    };
+
+    /**
+     * Get TodoItem by id
+     *
+     * @memberOf TodoList
+     * @param   {Number}        id - TodoItem identifier
+     * @returns {TodoItem|null} TodoItem object, or null if not found
+     */
+    TodoList.prototype.getTodoItem = function (id)
+    {
+        return this._findTodo(id);
+    };
+
+    /****************************** PRIVATE ******************************/
 
     /**
      * Get reference to Category object from given category holder
@@ -309,11 +332,13 @@ define(function(require)
      * @private
      * @param {Object}   categoryHolder - Reference to one of TodoList._categories elements
      * @param {TodoItem} todo           - To-do item to add
+     * @returns {TodoItem} Added TodoItem object
      */
     TodoList.prototype._addTodoToCategory = function (categoryHolder, todo)
     {
         todo.setId(this._nextTodoId++);
         categoryHolder.todo.push(todo);
+        return todo;
     };
 
     /**
@@ -383,6 +408,32 @@ define(function(require)
                 if (this._categories[i].todo[j].getId() === id)
                 {
                     return this._categories[i].todo[j];
+                }
+            }
+        }
+
+        return null;
+    };
+
+    /**
+     * Get Category object which contains given to-do item
+     *
+     * @memberOf TodoList
+     * @private
+     * @param   {Number}        todoId - To-do identifier
+     * @returns {Category|null} Category object, or null if it is not found
+     */
+    TodoList.prototype._getCategoryContainingTodo = function (todoId)
+    {
+        var i, j;
+
+        for (i = 0; i < this._categories.length; ++i)
+        {
+            for (j = 0; j < this._categories[i].todo.length; ++j)
+            {
+                if (this._categories[i].todo[j].getId() === todoId)
+                {
+                    return this._categories[i].category;
                 }
             }
         }
