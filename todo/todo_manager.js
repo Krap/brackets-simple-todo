@@ -187,7 +187,9 @@ define(function(require)
     {
         var that = this;
 
-        this._provider.getTodoList()
+        this._panel._setControlsEnabled(false);
+
+        this._provider.getTodoList().always(function () { that._panel._setControlsEnabled(true); })
         .done(function (todoList)
         {
             that._panel.getEditor().render(todoList);
@@ -210,7 +212,9 @@ define(function(require)
     {
         var that = this;
 
-        this._provider.addTodo(categoryId, new TodoItem(description))
+        this._panel._setControlsEnabled(false);
+
+        this._provider.addTodo(categoryId, new TodoItem(description)).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -232,7 +236,9 @@ define(function(require)
     {
         var that = this;
 
-        this._provider.addCategory(name)
+        this._panel._setControlsEnabled(false);
+
+        this._provider.addCategory(name).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -255,7 +261,9 @@ define(function(require)
     {
         var that = this;
 
-        this._provider.editTodo(id, null, description)
+        this._panel._setControlsEnabled(false);
+
+        this._provider.editTodo(id, null, description).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -278,7 +286,9 @@ define(function(require)
     {
         var that = this;
 
-        this._provider.editCategory(id, name)
+        this._panel._setControlsEnabled(false);
+
+        this._provider.editCategory(id, name).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -300,7 +310,9 @@ define(function(require)
     {
         var that = this;
 
-        this._provider.deleteTodo(id)
+        this._panel._setControlsEnabled(false);
+
+        this._provider.deleteTodo(id).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -322,7 +334,9 @@ define(function(require)
     {
         var that = this;
 
-        this._provider.deleteCategory(id)
+        this._panel._setControlsEnabled(false);
+
+        this._provider.deleteCategory(id).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -351,7 +365,9 @@ define(function(require)
         {
             var that = this;
 
-            this._provider.editTodo(id, isCompleted, null)
+            this._panel._setControlsEnabled(false);
+
+            this._provider.editTodo(id, isCompleted, null).always(function () { that._panel._setControlsEnabled(true); })
             .fail(function (error)
             {
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_EDIT_TODO_FAILED, error);
@@ -389,6 +405,8 @@ define(function(require)
         var that    = this,
             result  = $.Deferred(), i, j, categories, category, todos, todoIdsToDelete = [];
 
+        this._panel._setControlsEnabled(false);
+
         this._provider.getTodoList()
         .done(function (todoList)
         {
@@ -410,15 +428,20 @@ define(function(require)
 
             if (todoIdsToDelete.length > 0)
             {
-                that._provider.deleteTodo(todoIdsToDelete).done(function () { result.resolve(); }).fail(function (error) { result.reject(error); });
+                that._provider.deleteTodo(todoIdsToDelete)
+                .always(function () { that._panel._setControlsEnabled(true); })
+                .done(function () { result.resolve(); })
+                .fail(function (error) { result.reject(error); });
             }
             else
             {
+                that._panel._setControlsEnabled(true);
                 result.resolve();
             }
         })
         .fail(function (error)
         {
+            that._panel._setControlsEnabled(true);
             result.reject(error);
         });
 

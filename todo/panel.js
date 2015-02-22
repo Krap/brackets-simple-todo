@@ -72,6 +72,17 @@ define(function(require)
         return this._editor;
     };
 
+    /**
+     * Enable/Disable controls on panel
+     *
+     * @memberOf TodoPanel
+     * @param {Boolean} isEnabled - True to enable controls, false to disable
+     */
+    TodoPanel.prototype.setControlsEnabled = function (isEnabled)
+    {
+        this._setControlsEnabled(isEnabled);
+    };
+
     /****************************** PRIVATE ******************************/
 
     /**
@@ -358,17 +369,29 @@ define(function(require)
      */
     TodoPanel.prototype._onEditModeChanged = function (mode)
     {
-        var isControlsDisabled = (mode !== TodoEditor.MODE_IDLE);
+        var isControlsEnabled = (mode === TodoEditor.MODE_IDLE);
 
+        this._setControlsEnabled(isControlsEnabled);
+    };
+
+    /**
+     * Enable/Disable controls on panel
+     *
+     * @memberOf TodoPanel
+     * @private
+     * @param {Boolean} isEnabled - True to enable controls, false to disable
+     */
+    TodoPanel.prototype._setControlsEnabled = function (isEnabled)
+    {
         // Enable/disable controls in bar
-        this._buttons.reload.toggleClass('disabled', isControlsDisabled);
-        this._buttons.addTodo.toggleClass('disabled', isControlsDisabled);
-        this._buttons.addCategory.toggleClass('disabled', isControlsDisabled);
-        this._buttons.toggleCompleted.toggleClass('disabled', isControlsDisabled);
-        this._buttons.settings.toggleClass('disabled', isControlsDisabled);
+        this._buttons.reload.toggleClass('disabled', !isEnabled);
+        this._buttons.addTodo.toggleClass('disabled', !isEnabled);
+        this._buttons.addCategory.toggleClass('disabled', !isEnabled);
+        this._buttons.toggleCompleted.toggleClass('disabled', !isEnabled);
+        this._buttons.settings.toggleClass('disabled', !isEnabled);
 
         // Enable/disable to-do completion checkboxes
-        this._panel.find('.todo-completion input').prop('disabled', isControlsDisabled);
+        this._panel.find('.todo-completion input').prop('disabled', !isEnabled);
     };
 
     return TodoPanel;

@@ -413,7 +413,37 @@ define(function(require)
      * @param   {Number|Array}    id - To-do item identifier or an Array of identifiers
      * @returns {$.Promise} Promise that will be resolved on success, or rejected with error description on failure
      */
-    TrelloTodoProvider.prototype._deleteTodo = function (id)
+    TrelloTodoProvider.prototype._deleteTodo = function (idToDelete)
+    {
+        var result          = $.Deferred(),
+            ids             = [].concat(idToDelete),
+            promises        = [], i;
+
+        for (i = 0; i <  ids.length; ++i)
+        {
+            promises.push(this._deleteSingleTodo(ids[i]));
+        }
+
+        $.when.apply($, promises).done(function ()
+        {
+            result.resolve();
+        }).fail(function (response)
+        {
+            result.reject(response);
+        });
+
+        return result;
+    };
+
+    /**
+     * Delete existing to-do item
+     *
+     * @memberOf TrelloTodoProvider
+     * @private
+     * @param   {Number} id - To-do item identifier
+     * @returns {$.Promise}    Promise that will be resolved on success, or rejected with error description on failure
+     */
+    TrelloTodoProvider.prototype._deleteSingleTodo = function (id)
     {
         var result          = $.Deferred(),
             category        = this._cachedTodoList.getCategoryContainingTodo(id),
@@ -435,6 +465,7 @@ define(function(require)
         else
         {
             result.reject(Strings.TRELLO_PROVIDER_ERR_TODO_NOT_FOUND + id);
+            return false;
         }
 
         return result;
