@@ -5,7 +5,7 @@ Features:
 
 - Flat and categorized to-do list support
 - To-do list can be stored in human-readable text file with configurable format
-- Alternatively, to-do list can be stored in [Trello](trello.com)
+- Alternatively, to-do list can be stored in [Trello](https://trello.com)
 
 Extension demo:
 
@@ -94,7 +94,7 @@ String prefix which will be used to mark incomplete tasks. Default value is `- `
 _**Important:** backup your to-do file before changing any prefixes. Simple To-Do won't understand file with old prefixes and therefore will erase it._
 
 ## Trello Storage
-You can connect Simple To-Do to your [Trello](trello.com) account and store your to-do list as a Trello list. Thus, you can access it from different computers or via Trello website.
+You can connect Simple To-Do to your [Trello](https://trello.com) account and store your to-do list as a Trello list. Thus, you can access it from different computers or via Trello website.
 
 _Note: Trello storage doesn't support uncategorized tasks, i.e. each task should be within some category. _
 
