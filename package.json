@@ -1,9 +1,9 @@
 {
     "name": "ovk.brackets-simple-todo",
     "title": "Simple To-Do",
-    "description": "Simple to-do list for Brackets. Tasks stored in human readable/editable text files.",
+    "description": "Simple to-do list for Brackets. Tasks can be stored in text files or Trello.",
     "homepage": "https://github.com/ovk/brackets-simple-todo",
-    "version": "0.1.3",
+    "version": "0.1.4",
     "author": "Oleg Koshelnikov <koshelnikov@gmail.com>",
     "license": "MIT",
     "engines": {
