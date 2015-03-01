@@ -179,7 +179,7 @@ define(function(require)
     FileTodoProvider.prototype.onProjectChanged = function ()
     {
         this._initializeTodoFile();
-        
+
         return true;
     };
 
@@ -207,14 +207,14 @@ define(function(require)
         'SETTINGS_ID':      'text-file-storage',
         'PARAMETERS':
         [
-            { 'NAME': Strings.FILE_PROVIDER_FILE_NAME,          'ID': 'todo-file',      'TYPE': 'string', 'DEFAULT': 'todo.txt' },
+            { 'NAME': Strings.FILE_PROVIDER_FILE_NAME,          'ID': 'todo-file-path', 'TYPE': 'string', 'DEFAULT': '{PROJECT}/todo.txt' },
             { 'NAME': Strings.FILE_PROVIDER_CATEGORY_PREFIX,    'ID': 'todo-category',  'TYPE': 'string', 'DEFAULT': '# ' },
             { 'NAME': Strings.FILE_PROVIDER_COMPLETED_PREFIX,   'ID': 'todo-complete',  'TYPE': 'string', 'DEFAULT': '+ ' },
             { 'NAME': Strings.FILE_PROVIDER_INCOMPLETE_PREFIX,  'ID': 'todo-incomplete','TYPE': 'string', 'DEFAULT': '- ' }
         ],
         'VALIDATE': function (parameters)
         {
-            if (parameters['todo-file'].trim().length === 0)
+            if (parameters['todo-file-path'].trim().length === 0)
             {
                 return Strings.FILE_PROVIDER_ERR_FILENAME_EMPTY;
             }
@@ -255,8 +255,13 @@ define(function(require)
      */
     FileTodoProvider.prototype._initializeTodoFile = function ()
     {
-        // For now to-do file name is always project-relative
-        this._todoFileFullPath = ProjectManager.getProjectRoot().fullPath + this._todoFileName;
+        var projectBaseRegex    = new RegExp('{\\s*PROJECT\\s*}', 'gi'),
+            projectBase         = ProjectManager.getProjectRoot().fullPath;
+
+        this._todoFileFullPath = this._todoFileName.replace(projectBaseRegex, projectBase);     // Replace {PROJECT} with current project path
+        this._todoFileFullPath = this._todoFileFullPath.replace(new RegExp('\\\\', 'g'), '/');  // Get rid of any back slashes
+        this._todoFileFullPath = this._todoFileFullPath.replace(new RegExp('/+', 'g'), '/');    // Get rid of any sequences of forward slahes
+
         this._todoFile = FileSystem.getFileForPath(this._todoFileFullPath);
     };
 
@@ -453,7 +458,7 @@ define(function(require)
      */
     FileTodoProvider.prototype._applySettings = function (settings)
     {
-        this._todoFileName = settings['todo-file'];
+        this._todoFileName = settings['todo-file-path'];
         this._markers = { 'completed': settings['todo-complete'], 'incomplete': settings['todo-incomplete'], 'category': settings['todo-category'] };
         this._initializeTodoFile();
     };

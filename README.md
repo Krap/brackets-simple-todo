@@ -67,7 +67,9 @@ Here you can select where to store your to-do list. Two options are available in
 On checking this option all of your existing completed tasks will be permanently deleted. While this option is checked, each task will be deleted as soon as it is marked as completed.
 
 ## Text File Storage
-This is the default storage for your tasks. When it is selected, to-do list will be stored in text file inside the root folder of the active Brackets project. Simple To-Do will automatically switch to different file when active Brackets project is changed (i.e. to-do list files are 'per-project'). The default file name is `todo.txt` and the default file format looks like this:
+This is the default storage for your tasks. When it is selected, to-do list will be stored by default in text file inside the root folder of the active Brackets project. Simple To-Do will automatically switch to different file when active Brackets project is changed (i.e. by default to-do list files are 'per-project'). The default file name is `{PROJECT}/todo.txt` (the `{PROJECT}` variable is replaced with the actual full path of the current project). To make a to-do list file global, just set file name to some absolute path, for instance `C:\todo.txt`.
+
+The default file format looks like this:
 
 ```
 - Some task
