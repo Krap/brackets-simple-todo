@@ -595,6 +595,28 @@ define(function(require)
                 row.show();
             }
         });
+
+        // Hide each category which doesn't contain any incomplete items
+        if (this._filter.completed === false)
+        {
+            this._tableContainer.find('table').each(function ()
+            {
+                var table = $(this);
+
+                if (table.find('.todo-completion input:checkbox:not(:checked)').length === 0)
+                {
+                    // Don't hide empty categories
+                    if (table.find('.todo-completion input:checkbox:checked').length !== 0)
+                    {
+                        table.hide();
+                    }
+                }
+            });
+        }
+        else
+        {
+            this._tableContainer.find('table').show();
+        }
     };
 
     /**

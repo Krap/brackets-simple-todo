@@ -38,7 +38,7 @@ There are six icons in the panel header (left-to-right):
 1. Refresh to-do list
 2. Add new uncategorized task
 3. Add new category
-4. Toggle completed tasks visibility
+4. Toggle completed tasks and categories categories visibility
 5. Open Simple To-Do settings dialog
 6. Close simple to-do panel
 
