@@ -14,6 +14,9 @@ define(function(require)
     var Dialogs             = brackets.getModule('widgets/Dialogs'),
         DefaultDialogs      = brackets.getModule('widgets/DefaultDialogs'),
         CommandManager      = brackets.getModule('command/CommandManager'),
+        Commands            = brackets.getModule('command/Commands'),
+        EditorManager       = brackets.getModule('editor/EditorManager'),
+        MainViewManager     = brackets.getModule('view/MainViewManager'),
 
         TodoItem            = require('todo/todo_item'),
         TodoPanel           = require('todo/panel'),
@@ -147,17 +150,18 @@ define(function(require)
         // Initialize to-do panel
         this._panel = new TodoPanel(
         {
-            'onClose':              function ()                         { that._setTodoPanelVisible(); },
-            'onReload':             function ()                         { that._rereadTodoList(); },
-            'onTodoAdd':            function (categoryId, description)  { that._addTodoItem(categoryId, description); },
-            'onCategoryAdd':        function (name)                     { that._addCategory(name); },
-            'onTodoEdit':           function (id, description)          { that._editTodoItem(id, description); },
-            'onCategoryEdit':       function (id, name)                 { that._editCategory(id, name); },
-            'onTodoDelete':         function (id)                       { that._deleteTodoItem(id); },
-            'onCategoryDelete':     function (id)                       { that._deleteCategory(id); },
-            'onCompletionChanged':  function (id, isCompleted)          { that._setTodoItemCompletion(id, isCompleted); },
-            'onToggleCompleted':    function ()                         { that._toggleCompletedItemsVisibility(); },
-            'onShowSettings':       function ()                         { that._showSettingsDialog(); }
+            'onClose':              function ()                                 { that._setTodoPanelVisible(); },
+            'onReload':             function ()                                 { that._rereadTodoList(); },
+            'onTodoAdd':            function (categoryId, description, attrs)   { that._addTodoItem(categoryId, description, attrs); },
+            'onCategoryAdd':        function (name)                             { that._addCategory(name); },
+            'onTodoEdit':           function (id, description, attrs)           { that._editTodoItem(id, description, attrs); },
+            'onCategoryEdit':       function (id, name)                         { that._editCategory(id, name); },
+            'onTodoDelete':         function (id)                               { that._deleteTodoItem(id); },
+            'onCategoryDelete':     function (id)                               { that._deleteCategory(id); },
+            'onCompletionChanged':  function (id, isCompleted)                  { that._setTodoItemCompletion(id, isCompleted); },
+            'onToggleCompleted':    function ()                                 { that._toggleCompletedItemsVisibility(); },
+            'onShowSettings':       function ()                                 { that._showSettingsDialog(); },
+            'onOpenAssociatedFile': function (fileName)                         { that._openAssociatedFile(fileName); }
         });
 
         this._panel.setCompletedTodoVisibility(Settings.get(Settings.COMPLETED_TODO_VISIBLE));
@@ -207,14 +211,15 @@ define(function(require)
      * @private
      * @param {Number} categoryId  - Id of the destination category
      * @param {String} description - To-do item's description
+     * @param {Object} attributes  - To-do item's attributes
      */
-    TodoManager.prototype._addTodoItem = function (categoryId, description)
+    TodoManager.prototype._addTodoItem = function (categoryId, description, attributes)
     {
         var that = this;
 
         this._panel._setControlsEnabled(false);
 
-        this._provider.addTodo(categoryId, new TodoItem(description)).always(function () { that._panel._setControlsEnabled(true); })
+        this._provider.addTodo(categoryId, new TodoItem(description, false, attributes)).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -256,14 +261,15 @@ define(function(require)
      * @private
      * @param {Number} id          - To-do item id
      * @param {String} description - New to-do item's description
+     * @param {Object} attributes  - To-do item's attributes
      */
-    TodoManager.prototype._editTodoItem = function (id, description)
+    TodoManager.prototype._editTodoItem = function (id, description, attributes)
     {
         var that = this;
 
         this._panel._setControlsEnabled(false);
 
-        this._provider.editTodo(id, null, description).always(function () { that._panel._setControlsEnabled(true); })
+        this._provider.editTodo(id, null, description, attributes).always(function () { that._panel._setControlsEnabled(true); })
         .done(function ()
         {
             that._rereadTodoList();
@@ -367,7 +373,7 @@ define(function(require)
 
             this._panel._setControlsEnabled(false);
 
-            this._provider.editTodo(id, isCompleted, null).always(function () { that._panel._setControlsEnabled(true); })
+            this._provider.editTodo(id, isCompleted, null, null).always(function () { that._panel._setControlsEnabled(true); })
             .fail(function (error)
             {
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_EDIT_TODO_FAILED, error);
@@ -493,6 +499,28 @@ define(function(require)
                 Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_DEL_COMPLETED_FAILED, error);
             });
         });
+    };
+
+    /**
+     * Open given file in Brackets editor
+     *
+     * @memberOf TodoManager
+     * @private
+     * @param {String}  fileName - Full file name of the file to open
+     */
+    TodoManager.prototype._openAssociatedFile = function (fileName)
+    {
+        try
+        {
+            CommandManager.execute(Commands.FILE_OPEN, { fullPath: fileName }).done(function()
+            {
+                MainViewManager.focusActivePane();
+            });
+        }
+        catch (e)
+        {
+            Dialogs.showModalDialog(DefaultDialogs.DIALOG_ID_ERROR, Strings.DIALOG_TITLE_OPEN_ASSOC_FAILED, e);
+        }
     };
 
     TodoManager.EXTENSION_ICON_ID = 'ovk-todo-toolbar-icon';

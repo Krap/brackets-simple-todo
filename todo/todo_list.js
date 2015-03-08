@@ -74,9 +74,10 @@ define(function(require)
      * @param   {Number}  id          - To-do item id
      * @param   {Boolean} isCompleted - New completion status, or null if not changed
      * @param   {String}  description - New description, or null if not changed
+     * @param   {Object}  attributes  - New attributes, or null, if not changed                               
      * @returns {Boolean} True if item was edited, false if not found
      */
-    TodoList.prototype.editTodo = function (id, isCompleted, description)
+    TodoList.prototype.editTodo = function (id, isCompleted, description, attributes)
     {
         var todo = this._findTodo(id);
 
@@ -90,6 +91,11 @@ define(function(require)
             if (description !== null && todo.getDescription() !== description)
             {
                 todo.setDescription(description);
+            }
+
+            if (attributes !== null)
+            {
+                todo.setAttributes(attributes);
             }
 
             return true;

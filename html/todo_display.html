@@ -1,1 +1,4 @@
-<span>{{ TODO_DESCRIPTION }}</span>
+<span class="todo-description-content">{{ TODO_DESCRIPTION }}</span>
+{{ #ASSOCIATED_WITH_FILE }}
+<a href="#" class="ovk-icon-link ovk-simple-todo-assoc-file" title="{{ Strings.TODO_TOOLTIP_OPEN_ASSOC }} {{ ASSOCIATED_FILE_NAME }}" data-file-name="{{ ASSOCIATED_FILE_NAME }}">&nbsp;</a>
+{{ /ASSOCIATED_WITH_FILE }}

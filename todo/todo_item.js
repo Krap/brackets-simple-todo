@@ -18,12 +18,14 @@ define(function(require)
      * @class TodoItem
      * @param {String}  [description] - To-do item textual content
      * @param {Boolean} [isCompleted] - Indication whether to-do item is completed or not
+     * @param {Object}  [attributes]  - Object containing custom attributes of the to-do item
      */
-    function TodoItem(description, isCompleted)
+    function TodoItem(description, isCompleted, attributes)
     {
         this._id = TodoItem.INVALID_ID;
         this._description = description || '';
         this._isCompleted = isCompleted || false;
+        this._attributes = attributes || {};
     }
 
     /**
@@ -90,6 +92,28 @@ define(function(require)
     TodoItem.prototype.setCompleted = function (isCompleted)
     {
         this._isCompleted = !!isCompleted;
+    };
+
+    /**
+     * Get to-do item custom attributes
+     *
+     * @memberOf TodoItem
+     * @returns {Object} Custom attributes
+     */
+    TodoItem.prototype.getAttributes = function ()
+    {
+        return this._attributes;
+    };
+
+    /**
+     * Set to-do item custom attributes
+     *
+     * @memberOf TodoItem
+     * @param {Object} [attributes] - Custom attributes
+     */
+    TodoItem.prototype.setAttributes = function (attributes)
+    {
+        this._attributes = attributes;
     };
 
     /**

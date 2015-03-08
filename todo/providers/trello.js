@@ -61,11 +61,12 @@ define(function(require)
      * @param   {Number}    id          - To-do item identifier
      * @param   {Boolean}   isCompleted - New completion status, or null if not changed
      * @param   {String}    description - New description, or null if not changed
+     * @param   {Object}    attributes  - New attributes, or null if not changed
      * @returns {$.Promise} Promise that will be resolved on success, or rejected with error description on failure
      */
-    TrelloTodoProvider.prototype.editTodo = function (id, isCompleted, description)
+    TrelloTodoProvider.prototype.editTodo = function (id, isCompleted, description, attributes)
     {
-        return this._editTodo(id, isCompleted, description);
+        return this._editTodo(id, isCompleted, description, attributes);
     };
 
     /**
@@ -306,6 +307,12 @@ define(function(require)
             categoryInfo    = this._catergoryIdMap[categoryId],
             that            = this, checklist, checkitem;
 
+        if (!$.isEmptyObject(todo.getAttributes()))
+        {
+            result.reject(Strings.TRELLO_PROVIDER_ATTRS_NOT_SUPP);
+            return result;
+        }
+
         if (categoryId !== Category.INVALID_ID)
         {
             if (categoryInfo)
@@ -363,9 +370,10 @@ define(function(require)
      * @param   {Number}    id          - To-do item identifier
      * @param   {Boolean}   isCompleted - New completion status, or null if not changed
      * @param   {String}    description - New description, or null if not changed
+     * @param   {Object}    attributes  - New attributes, or null if not changed
      * @returns {$.Promise} Promise that will be resolved on success, or rejected with error description on failure
      */
-    TrelloTodoProvider.prototype._editTodo = function (id, isCompleted, description)
+    TrelloTodoProvider.prototype._editTodo = function (id, isCompleted, description, attributes)
     {
         var result          = $.Deferred(),
             category        = this._cachedTodoList.getCategoryContainingTodo(id),
@@ -373,6 +381,12 @@ define(function(require)
             trelloTodoId    = this._todoIdMap[id],
             editedTodo      = {},
             that            = this, checklistId, categoryInfo;
+
+        if (attributes && !$.isEmptyObject(attributes))
+        {
+            result.reject(Strings.TRELLO_PROVIDER_ATTRS_NOT_SUPP);
+            return result;
+        }
 
         if (trelloTodoId && category && todo)
         {

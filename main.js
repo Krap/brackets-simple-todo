@@ -32,7 +32,7 @@ define(function (require, exports, module)
     {
         todoManager.initialize([ FileTodoProvider, TrelloTodoProvider ]);
 
-        $(ProjectManager).on('projectOpen', function ()
+        ProjectManager.on('projectOpen', function ()
         {
             todoManager.onProjectChanged();
         });

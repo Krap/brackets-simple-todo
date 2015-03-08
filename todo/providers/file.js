@@ -31,6 +31,7 @@ define(function(require)
     function FileTodoProvider(settings)
     {
         this._todoList = new TodoList();
+        this._attrRegex = new RegExp('{{.+}}', 'gi');
 
         this.applySettings(settings);
         this._initializeTodoFile();
@@ -84,11 +85,12 @@ define(function(require)
      * @param   {Number}    id          - To-do item identifier
      * @param   {Boolean}   isCompleted - New completion status, or null if not changed
      * @param   {String}    description - New description, or null if not changed
+     * @param   {Object}    attributes  - New attributes, or null if not changed
      * @returns {$.Promise} Promise that will be resolved on success, or rejected with error description on failure
      */
-    FileTodoProvider.prototype.editTodo = function (id, isCompleted, description)
+    FileTodoProvider.prototype.editTodo = function (id, isCompleted, description, attributes)
     {
-        if (this._getCachedTodoList().editTodo(id, isCompleted, description))
+        if (this._getCachedTodoList().editTodo(id, isCompleted, description, attributes))
         {
              return this._save();
         }
@@ -314,7 +316,7 @@ define(function(require)
             }
             else
             {
-                // Todo file does not exist yet. Since this is not an error - resolve promise with nothing
+                // To-do file does not exist yet. Since this is not an error - resolve promise with nothing
                 result.resolve('');
             }
         });
@@ -335,7 +337,7 @@ define(function(require)
         var lines               = contents.split('\n'),
             todoList            = new TodoList(),
             currentCategoryId   = Category.INVALID_ID,
-            i, line, isCompleted, category, description;
+            i, line, isCompleted, category, description, parsedDescription;
 
         // Parse file contents line by line
         for (i = 0; i < lines.length; ++i)
@@ -366,7 +368,12 @@ define(function(require)
 
                         if (description.length > 0)
                         {
-                            todoList.addTodo(currentCategoryId, new TodoItem(description, isCompleted));
+                            parsedDescription = this._parseDescription(description);
+
+                            if (parsedDescription.description.length > 0)
+                            {
+                                todoList.addTodo(currentCategoryId, new TodoItem(parsedDescription.description, isCompleted, parsedDescription.attributes));
+                            }
                         }
                     }
                 }
@@ -374,6 +381,45 @@ define(function(require)
         }
 
         return todoList;
+    };
+
+    /**
+     * Parse raw description line of a to-do item (contains description + optional attributes)
+     *
+     * @memberOf FileTodoProvider
+     * @private
+     * @param   {String} str - Raw description string
+     * @returns {Object} Object with two properties: 'description' and optional 'attributes'
+     */
+    FileTodoProvider.prototype._parseDescription = function (str)
+    {
+        var match   = this._attrRegex.exec(str),
+            result  = { 'description': null, 'attributes': null }, strAttributes;
+
+        if (match && match.length === 1)
+        {
+            // Cut attributes from the description
+            result.description = str.replace(this._attrRegex, '');
+
+            // Try to parse attributes as a JSON object
+            strAttributes = match[0].substring(1, match[0].length - 1); // Get rid of the double brackets
+
+            try
+            {
+                result.attributes = JSON.parse(strAttributes);
+            }
+            catch (e)
+            {
+                console.warn('Simple To-Do: to-do item attributes malformed - "' + strAttributes + '"');
+            }
+        }
+        else
+        {
+            // No attributes
+            result.description = str;
+        }
+
+        return result;
     };
 
     /**
@@ -440,11 +486,32 @@ define(function(require)
 
             $.each(todoList.getTodoListForCategory(category.getId()), function (index, todo)
             {
-                result += (todo.isCompleted() ? that._markers.completed : that._markers.incomplete) + todo.getDescription() + ENDLINE;
+                var description = that._buildTodoDescription(todo);
+                result += (todo.isCompleted() ? that._markers.completed : that._markers.incomplete) + description + ENDLINE;
             });
 
             result += ENDLINE;
         });
+
+        return result;
+    };
+
+    /**
+     * Generate raw description string (containing description + optional attributes) from a to-do item
+     *
+     * @memberOf FileTodoProvider
+     * @private
+     * @param   {TodoItem} todo - A TodoItem object
+     * @returns {String} Generated raw description string
+     */
+    FileTodoProvider.prototype._buildTodoDescription = function (todo)
+    {
+        var result = todo.getDescription();
+
+        if (!$.isEmptyObject(todo.getAttributes()))
+        {
+            result += '{' + JSON.stringify(todo.getAttributes()) + '}';
+        }
 
         return result;
     };

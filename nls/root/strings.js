@@ -5,6 +5,8 @@ define(
 {
     'COMMAND_TOGGLE':                   'ovk.todo.panel.togle',
 
+    'ATTR_ASSOCIATED_FILE':             '_file',
+
     //
     'EXTENSION_NAME':                   'Simple To-Do',
 
@@ -26,7 +28,10 @@ define(
 
     'EDIT_TOOLTIP_ACCEPT':              'Accept changes',
     'EDIT_TOOLTIP_DECLINE':             'Decline changes',
+    'EDIT_TOOLTIP_LINK':                'Link/Unlink to opened file',
     'EDIT_TOOLTIP_DELETE':              'Delete',
+
+    'TODO_TOOLTIP_OPEN_ASSOC':          'Open the associated file in the editor. File: ',
 
     // Dialogs
     'DIALOG_TITLE_ADD_TODO_FAILED':     'Failed to add to-do item',
@@ -42,6 +47,8 @@ define(
 
     'DIALOG_TITLE_EDIT_CAT_FAILED':     'Failed to edit category',
     'DIALOG_MESSAGE_CAT_NAME_EMPTY':    'A category name is empty',
+
+    'DIALOG_TITLE_OPEN_ASSOC_FAILED':   'Failed to open associated file',
 
     'DIALOG_TITLE_CONFIRM_CAT_DELETE':  'Confirm category delete',
     'DIALOG_MESSAGE_CONFIRM_CAT_DELETE':'Delete category \'{0}\' and all its to-do items?',
@@ -98,6 +105,7 @@ define(
     'TRELLO_PROVIDER_NEW_CARD_ERR':         'Failed to create new card',
     'TRELLO_PROVIDER_EDIT_CARD_ERR':        'Failed to edit card with id: ',
     'TRELLO_PROVIDER_DEL_CARD_ERR':         'Failed to delete card with id: ',
+    'TRELLO_PROVIDER_ATTRS_NOT_SUPP':       'To-do item attributes are not supported in Trello storage',
 
     //
     'PLACEHOLDER_TODO_ITEM':            'To-Do Item',

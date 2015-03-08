@@ -12,6 +12,7 @@ define(function(require)
     'use strict';
 
     var WorkspaceManager    = brackets.getModule('view/WorkspaceManager'),
+        DocumentManager     = brackets.getModule('document/DocumentManager'),
 
         Strings             = require('todo/strings'),
         Category            = require('todo/category'),
@@ -127,9 +128,15 @@ define(function(require)
         this._tableContainer = this._todoPanel.find('.table-container');
 
         // Setup callback on to-do item edit start
-        this._tableContainer.on('click', '.todo-description', function ()
+        this._tableContainer.on('click', '.todo-description-content', function ()
         {
-            that._editTodoItem($(this).data('todo-id'));
+            that._editTodoItem($(this).parent().data('todo-id'));
+        });
+
+        // Setup callback on click on 'Open associated file'
+        this._tableContainer.on('click', '.ovk-simple-todo-assoc-file', function ()
+        {
+            that._callbacks.onOpenAssociatedFile($(this).data('file-name'));
         });
 
         // Setup callback on to-do item add to specific category
@@ -196,7 +203,13 @@ define(function(require)
                 categoryTodoListModel.push(
                 {
                     'TODO_ID':          todo.getId(),
-                    'TODO_DESCRIPTION': Mustache.render(todoDisplayHtml, { 'TODO_DESCRIPTION': todo.getDescription() }),
+                    'TODO_DESCRIPTION': Mustache.render(todoDisplayHtml,
+                    {
+                        'TODO_DESCRIPTION':     todo.getDescription(),
+                        'ASSOCIATED_WITH_FILE': !!todo.getAttributes()[Strings.ATTR_ASSOCIATED_FILE],
+                        'ASSOCIATED_FILE_NAME': todo.getAttributes()[Strings.ATTR_ASSOCIATED_FILE],
+                        'Strings':              Strings
+                    }),
                     'TODO_COMPLETED':   todo.isCompleted()
                 });
 
@@ -305,6 +318,8 @@ define(function(require)
         description = Mustache.render(rowTemplate,
         {
             'TODO_DESCRIPTION':     todo.getDescription(),
+            'ASSOCIATED_WITH_FILE': !!todo.getAttributes()[Strings.ATTR_ASSOCIATED_FILE],
+            'ASSOCIATED_FILE_NAME': todo.getAttributes()[Strings.ATTR_ASSOCIATED_FILE],
             'TODO_DELETE_VISIBLE':  mode === TodoEditor.MODE_EDIT,
             'Strings':              Strings
         });
@@ -364,11 +379,20 @@ define(function(require)
      */
     TodoEditor.prototype._getTodoItemFromTable = function (id)
     {
-        var row         = this._getRow(id),
-            isCompleted = row.find('.todo-completion input').is(':checked'),
-            description = row.find('.todo-description span').text(),
-            todo        = new TodoItem(description, isCompleted);
+        var row             = this._getRow(id),
+            isCompleted     = row.find('.todo-completion input').is(':checked'),
+            description     = row.find('.todo-description-content').text(),
+            assocFile       = row.find('.todo-description .ovk-simple-todo-assoc-file'),
+            assocFileName   = assocFile ? assocFile.data('file-name') : null, attributes = {}, todo;
 
+        if (assocFileName)
+        {
+            // This is not correct since it will erase other attributes of the edited to-do item
+            // but since for now there are no other attributes - don't care
+            attributes[Strings.ATTR_ASSOCIATED_FILE] = assocFileName;
+        }
+
+        todo = new TodoItem(description, isCompleted, attributes);
         todo.setId(id);
 
         return todo;
@@ -431,6 +455,8 @@ define(function(require)
      */
     TodoEditor.prototype._startEdit = function (todo, mode, categoryId)
     {
+        this._editedTodoAttributes = $.extend(true, {}, todo.getAttributes());
+        this._editedTodoAttrsChanged = false;
         this._editRow(todo, mode, categoryId);
     };
 
@@ -452,11 +478,11 @@ define(function(require)
 
             if (this.getMode() === TodoEditor.MODE_ADD)
             {
-                this._callbacks.onAdd(categoryId, description);
+                this._callbacks.onAdd(categoryId, description, this._editedTodoAttributes);
             }
             else if (this.getMode() === TodoEditor.MODE_EDIT)
             {
-                this._callbacks.onEdit(todo.getId(), description, todo.isCompleted());
+                this._callbacks.onEdit(todo.getId(), description, this._editedTodoAttrsChanged ? this._editedTodoAttributes : null);
             }
         }
         else if(this.getMode() === TodoEditor.MODE_CAT_ADD || this.getMode() === TodoEditor.MODE_CAT_EDIT)
@@ -503,6 +529,39 @@ define(function(require)
         }
 
         this._setMode(TodoEditor.MODE_IDLE);
+    };
+
+    /**
+     * Link/unlink edited to-do item with a currently opened file
+     *
+     * @memberOf TodoEditor
+     * @private
+     * @param {TodoItem} todo - Edited to-do item
+     */
+    TodoEditor.prototype._toggleAssociatedFile = function (todo)
+    {
+        var linked = false, currentDocument;
+
+        if (this._editedTodoAttributes[Strings.ATTR_ASSOCIATED_FILE])
+        {
+            // Delete association
+            delete this._editedTodoAttributes[Strings.ATTR_ASSOCIATED_FILE];
+            this._editedTodoAttrsChanged = true;
+        }
+        else
+        {
+            // Associate with opened file
+            currentDocument = DocumentManager.getCurrentDocument();
+
+            if (currentDocument && currentDocument.file && currentDocument.file.fullPath && currentDocument.file.fullPath.length > 0)
+            {
+                this._editedTodoAttributes[Strings.ATTR_ASSOCIATED_FILE] = currentDocument.file.fullPath;
+                this._editedTodoAttrsChanged = true;
+                linked = true;
+            }
+        }
+
+        this._tableContainer.find('.ovk-todo-description-edit .edit-link').toggleClass('edit-unlink', linked);
     };
 
     /**
@@ -663,6 +722,10 @@ define(function(require)
             }).on('click', '.edit-decline', function ()
             {
                 that._declineEdit(todo);
+            })
+            .on('click', '.edit-link', function ()
+            {
+                that._toggleAssociatedFile(todo);
             })
             .on('click', '.edit-delete', function ()
             {

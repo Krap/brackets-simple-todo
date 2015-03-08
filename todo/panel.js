@@ -113,14 +113,15 @@ define(function(require)
         // Create to-do editor inside panel
         this._editor = new TodoEditor(this._panel,
         {
-            'onAdd':                function (categoryId, description) { that._onTodoAdd(categoryId, description); },
+            'onAdd':                function (categoryId, description, attributes) { that._onTodoAdd(categoryId, description, attributes); },
             'onCategoryAdd':        function (name) { that._onCategoryAdd(name); },
-            'onEdit':               function (id, description, isCompleted) { that._onTodoEdit(id, description, isCompleted); },
+            'onEdit':               function (id, description, attributes) { that._onTodoEdit(id, description, attributes); },
             'onCategoryEdit':       function (id, name) { that._onCategoryEdit(id, name); },
             'onDelete':             function (id) { that._onTodoDelete(id); },
             'onCategoryDelete':     function (id) { that._onCategoryDelete(id); },
             'onModeChanged':        function (mode) { that._onEditModeChanged(mode); },
-            'onCompletionChanged':  function (id, isCompleted) { that._callbacks.onCompletionChanged(id, isCompleted); }
+            'onCompletionChanged':  function (id, isCompleted) { that._callbacks.onCompletionChanged(id, isCompleted); },
+            'onOpenAssociatedFile': function (fileName) { that._callbacks.onOpenAssociatedFile(fileName); }
         });
     };
 
@@ -253,8 +254,9 @@ define(function(require)
      * @private
      * @param {Number} categoryId  - Category id
      * @param {String} description - To-do item description
+     * @param {Object} attributes - To-do item attributes
      */
-    TodoPanel.prototype._onTodoAdd = function (categoryId, description)
+    TodoPanel.prototype._onTodoAdd = function (categoryId, description, attributes)
     {
         if (description.trim().length === 0)
         {
@@ -262,7 +264,7 @@ define(function(require)
         }
         else
         {
-            this._callbacks.onTodoAdd(categoryId, description);
+            this._callbacks.onTodoAdd(categoryId, description, attributes);
         }
     };
 
@@ -292,8 +294,9 @@ define(function(require)
      * @private
      * @param {Number}   id          - To-do item identifier
      * @param {String}   description - New to-do item description
+     * @param {Object}   attributes  - To-do item attributes
      */
-    TodoPanel.prototype._onTodoEdit = function (id, description)
+    TodoPanel.prototype._onTodoEdit = function (id, description, attributes)
     {
         if (description.trim().length === 0)
         {
@@ -301,7 +304,7 @@ define(function(require)
         }
         else
         {
-            this._callbacks.onTodoEdit(id, description);
+            this._callbacks.onTodoEdit(id, description, attributes);
         }
     };
 

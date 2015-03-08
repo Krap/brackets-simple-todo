@@ -9,7 +9,7 @@ Features:
 
 Extension demo:
 
-![todo](https://cloud.githubusercontent.com/assets/693072/5894885/70a4e63c-a4dd-11e4-8357-37e614304860.gif)
+![demo](https://cloud.githubusercontent.com/assets/693072/6547078/91ac7354-c5a3-11e4-952f-74510b9925d3.gif)
 
 Flat to-do list (without categories):
 
@@ -44,13 +44,14 @@ There are six icons in the panel header (left-to-right):
 
 To edit any task or category simply click on its name. While task/category in edit mode, there are three buttons on the right side:
 
-![editmode](https://cloud.githubusercontent.com/assets/693072/6320640/2b16dabe-bab1-11e4-9ce4-76dc1a4112e1.png)
+![taskedit](https://cloud.githubusercontent.com/assets/693072/6547092/26f44180-c5a4-11e4-8a42-70f89f6eeac6.png)
 
 These buttons are (left-to-right):
 
 1. Accept changes and save task/category.
 2. Decline changes. If task/category is being added this button means 'do not add'.
-3. Delete task/category. This button is only available when editing existing task/category.
+3. Associate this task with currently opened file in the Brackets editor.
+4. Delete task/category. This button is only available when editing existing task/category.
 
 To add task to any category, click on the 'plus' icon near the category name.
 
@@ -101,6 +102,8 @@ _**Important:** backup your to-do file before changing any prefixes. Simple To-D
 You can connect Simple To-Do to your [Trello](https://trello.com) account and store your to-do list as a Trello list. Thus, you can access it from different computers or via Trello website.
 
 _Note: Trello storage doesn't support uncategorized tasks, i.e. each task should be within some category._
+
+_Note: Trello storage doesn't support associating task with a file._
 
 To use Trello storage you should provide your Trello API Key and Token (so Simple To-Do can authenticate to Trello) and select board and list where to store your to-do list.
 
