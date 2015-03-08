@@ -23,6 +23,7 @@ define(function(require)
 
         $('#ovk-settings-delete-completed').prop('checked', Settings.get(Settings.DELETE_COMPLETED_TODO));
         $('#ovk-settings-toggle-panel-hotkey').val(Settings.get(Settings.TOGGLE_PANEL_HOTKEY));
+        $('#ovk-settings-add-todo-hotkey').val(Settings.get(Settings.ADD_TODO_HOTKEY));
 
         $.each(providers, function (index, definition)
         {
@@ -101,6 +102,7 @@ define(function(require)
             Settings.set(Settings.CURRENT_PROVIDER, $('#ovk-simple-todo-settings-provider-id').val());
             Settings.set(Settings.DELETE_COMPLETED_TODO, isDeleteCompleted);
             Settings.set(Settings.TOGGLE_PANEL_HOTKEY, $('#ovk-settings-toggle-panel-hotkey').val());
+            Settings.set(Settings.ADD_TODO_HOTKEY, $('#ovk-settings-add-todo-hotkey').val());
             Settings.save();
             promise.resolve();
             dialog.close();

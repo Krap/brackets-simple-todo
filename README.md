@@ -56,10 +56,13 @@ These buttons are (left-to-right):
 To add task to any category, click on the 'plus' icon near the category name.
 
 ## General Settings
-![gensettings](https://cloud.githubusercontent.com/assets/693072/6320664/0ae292a0-bab2-11e4-99d8-40abd7cc28d4.png)
+![generalsettings](https://cloud.githubusercontent.com/assets/693072/6547301/95871ffe-c5aa-11e4-8746-a34b4fe52173.png)
 
 ### Show/Hide Panel Hotkey
 You can select a key combination to show/hide Simple To-Do panel. The default value is <kbd>Ctrl</kbd>-<kbd>Shift</kbd>-<kbd>T</kbd>.
+
+### Add Task Hotkey
+You can select a key combination to add a new not catecorized task. The default value is <kbd>Ctrl</kbd>-<kbd>Shift</kbd>-<kbd>A</kbd>.
 
 ### To-Do Items Storage
 Here you can select where to store your to-do list. Two options are available in the current release - Text File (default) and Trello. Only one storage can be selected, but you can switch between them any time.

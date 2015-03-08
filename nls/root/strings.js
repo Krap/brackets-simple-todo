@@ -4,6 +4,7 @@
 define(
 {
     'COMMAND_TOGGLE':                   'ovk.todo.panel.togle',
+    'COMMAND_ADD_TODO':                 'ovk.todo.addTodo',
 
     'ATTR_ASSOCIATED_FILE':             '_file',
 
@@ -57,6 +58,7 @@ define(
     'SETTINGS_TAB_GENERAL':             'General',
     'SETTINGS_GENERAL':                 'General Settings',
     'SETTINGS_TOGGLE_PANEL_HOTKEY':     'Show/Hide Panel Hotkey',
+    'SETTINGS_ADD_TODO_HOTKEY':         'Add Task Hotkey',
     'SETTINGS_TODO_STORAGE':            'To-Do Items Storage',
     'SETTINGS_DELETE_COMPLETED':        'Delete Completed',
     'SETTINGS_DELETE_COMPLETED_WARN':   'Warning: all completed to-do items will be deleted',

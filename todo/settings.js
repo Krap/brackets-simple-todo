@@ -26,6 +26,7 @@ define(function(require)
     parameters.DELETE_COMPLETED_TODO      = 'deleteCompleted';
     parameters.CURRENT_PROVIDER           = 'todoProvider';
     parameters.TOGGLE_PANEL_HOTKEY        = 'togglePanelHotkey';
+    parameters.ADD_TODO_HOTKEY            = 'addTodoHotkey';
 
     settingsDefinition =
     [
@@ -33,7 +34,8 @@ define(function(require)
         { 'name': parameters.COMPLETED_TODO_VISIBLE,    'type': 'boolean',  'default': true },
         { 'name': parameters.DELETE_COMPLETED_TODO,     'type': 'boolean',  'default': false },
         { 'name': parameters.CURRENT_PROVIDER,          'type': 'string',   'default': FileTodoProvider.settings.SETTINGS_ID },
-        { 'name': parameters.TOGGLE_PANEL_HOTKEY,       'type': 'string',   'default': 'Ctrl-Shift-T' }
+        { 'name': parameters.TOGGLE_PANEL_HOTKEY,       'type': 'string',   'default': 'Ctrl-Shift-T' },
+        { 'name': parameters.ADD_TODO_HOTKEY,           'type': 'string',   'default': 'Ctrl-Shift-A' }
     ];
 
     initialize();

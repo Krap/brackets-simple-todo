@@ -40,6 +40,19 @@ define(function(require)
     }
 
     /**
+     * Initiate creation of the new uncategorized to-do item
+     *
+     * @memberOf TodoPanel
+     */
+    TodoPanel.prototype.createNewTodoItem = function ()
+    {
+        if (Settings.get(Settings.EXTENSION_ENABLED))
+        {
+            this.getEditor().createTodoItem();
+        }
+    };
+
+    /**
      * Set whether completed to-do items should be visible or hidden
      *
      * @memberOf TodoPanel

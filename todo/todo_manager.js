@@ -17,6 +17,7 @@ define(function(require)
         Commands            = brackets.getModule('command/Commands'),
         EditorManager       = brackets.getModule('editor/EditorManager'),
         MainViewManager     = brackets.getModule('view/MainViewManager'),
+        KeyBindingManager   = brackets.getModule('command/KeyBindingManager'),
 
         TodoItem            = require('todo/todo_item'),
         TodoPanel           = require('todo/panel'),
@@ -125,7 +126,7 @@ define(function(require)
      */
     TodoManager.prototype._initializeExtension = function ()
     {
-        var that = this;
+        var that = this, hotkey;
 
         // Initialize extension icon
         // In future should register command amd add hotkey
@@ -135,6 +136,17 @@ define(function(require)
             .attr('title', Strings.EXTENSION_NAME)
             .on('click', function () { that._setTodoPanelVisible(); })
             .appendTo($('#main-toolbar .buttons'));
+
+        // Add new to-do command
+        CommandManager.register(Strings.PANEL_TOOLTIP_ADD_TODO, Strings.COMMAND_ADD_TODO, function () { that._panel.createNewTodoItem(); });
+
+        // Add Keybinding for Toggle Command
+        hotkey = Settings.get(Settings.ADD_TODO_HOTKEY);
+
+        if (hotkey && hotkey.length > 0)
+        {
+            KeyBindingManager.addBinding(Strings.COMMAND_ADD_TODO, hotkey);
+        }
     };
 
     /**
