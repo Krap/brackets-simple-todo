@@ -299,5 +299,8 @@ ul.ovk-nav-tabs:before, ul.ovk-nav-tabs:after
     margin: 0px;
 }
 
-
+.ovk-settings-body a.link-disabled
+{
+    color: gray;
+}
 

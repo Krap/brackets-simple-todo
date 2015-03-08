@@ -640,13 +640,15 @@ define(function(require)
      * Refresh list of Trello lists
      *
      * @param {Object} dialogElement - jQuery element of the settings dialog
+     * @returns {$.Promise} Promise that will be resolved on success, or rejected on failure
      */
     function refreshTrelloLists(dialogElement)
     {
         var key             = dialogElement.find('#ovk-simple-todo-trello-key').val().trim(),
             token           = dialogElement.find('#ovk-simple-todo-trello-token').val().trim(),
             selectedBoardId = dialogElement.find('#ovk-simple-todo-trello-board').val(),
-            selectList      = dialogElement.find('#ovk-simple-todo-trello-list'), i, isSelected;
+            selectList      = dialogElement.find('#ovk-simple-todo-trello-list'),
+            result          = $.Deferred(), i, isSelected;
 
         settingsErrorClear(dialogElement);
         selectList.empty();
@@ -664,11 +666,19 @@ define(function(require)
                 }
 
                 selectList.prop('disabled', false);
+                result.resolve();
             }).fail(function (response)
             {
                 settingsErrorShow(dialogElement, Strings.TRELLO_PROVIDER_SETTINGS_GET_LIST_ERR + response.status + ' - ' + response.statusText);
+                result.reject();
             });
         }
+        else
+        {
+            result.reject();
+        }
+
+        return result;
     }
 
     /**
@@ -680,7 +690,17 @@ define(function(require)
     {
         var key             = dialogElement.find('#ovk-simple-todo-trello-key').val().trim(),
             token           = dialogElement.find('#ovk-simple-todo-trello-token').val().trim(),
-            selectBoard     = dialogElement.find('#ovk-simple-todo-trello-board'), i, isSelected;
+            selectBoard     = dialogElement.find('#ovk-simple-todo-trello-board'),
+            refreshLink     = dialogElement.find('#ovk-simple-todo-trello-refresh'), i, isSelected;
+
+        if (!refreshLink.hasClass('link-disabled'))
+        {
+            refreshLink.addClass('link-disabled');
+        }
+        else
+        {
+            return;
+        }
 
         settingsErrorClear(dialogElement);
         selectBoard.empty();
@@ -698,7 +718,10 @@ define(function(require)
                     selectBoard.append('<option value="' + response[i].id + '" ' + isSelected + '>' + response[i].name + '</option>');
                 }
 
-                refreshTrelloLists(dialogElement);
+                refreshTrelloLists(dialogElement).always(function ()
+                {
+                    refreshLink.removeClass('link-disabled');
+                });
 
                 selectBoard.prop('disabled', false);
 
