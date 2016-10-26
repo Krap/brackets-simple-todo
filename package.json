@@ -1,13 +1,13 @@
 {
-    "name": "ovk.brackets-simple-todo",
-    "title": "Simple To-Do",
-    "description": "Simple to-do list for Brackets. Tasks can be stored in text files or Trello.",
-    "homepage": "https://github.com/ovk/brackets-simple-todo",
-    "version": "0.1.5",
-    "author": "Oleg Koshelnikov <koshelnikov@gmail.com>",
-    "license": "MIT",
-    "engines": {
-        "brackets": ">=1.0.0"
-    },
-    "i18n": [ "en", "it", "uk", "ru" ]
+  "name": "ovk.brackets-simple-todo",
+  "title": "Simple To-Do",
+  "description": "Simple to-do list for Brackets. Tasks can be stored in text files or Trello.",
+  "homepage": "https://github.com/ovk/brackets-simple-todo",
+  "version": "0.1.6",
+  "author": "Oleg Koshelnikov <koshelnikov@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "brackets": ">=1.0.0"
+  },
+  "i18n": ["en", "it", "uk", "ru", "fr"]
 }
